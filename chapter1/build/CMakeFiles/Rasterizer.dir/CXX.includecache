@@ -6,15 +6,25 @@
 
 #IncludeRegexTransform: 
 
-/Users/liuchu/Downloads/Assignment1/代码框架/Triangle.hpp
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/Triangle.cpp
+Triangle.hpp
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/Triangle.hpp
+algorithm
+-
+array
+-
+stdexcept
+-
+
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/Triangle.hpp
 eigen3/Eigen/Eigen
 -
 
-/Users/liuchu/Downloads/Assignment1/代码框架/main.cpp
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/main.cpp
 Triangle.hpp
-/Users/liuchu/Downloads/Assignment1/代码框架/Triangle.hpp
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/Triangle.hpp
 rasterizer.hpp
-/Users/liuchu/Downloads/Assignment1/代码框架/rasterizer.hpp
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/rasterizer.hpp
 eigen3/Eigen/Eigen
 -
 iostream
@@ -22,9 +32,21 @@ iostream
 opencv2/opencv.hpp
 -
 
-/Users/liuchu/Downloads/Assignment1/代码框架/rasterizer.hpp
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/rasterizer.cpp
+algorithm
+-
+rasterizer.hpp
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/rasterizer.hpp
+opencv2/opencv.hpp
+-
+math.h
+-
+stdexcept
+-
+
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/rasterizer.hpp
 Triangle.hpp
-/Users/liuchu/Downloads/Assignment1/代码框架/Triangle.hpp
+/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/Triangle.hpp
 algorithm
 -
 eigen3/Eigen/Eigen

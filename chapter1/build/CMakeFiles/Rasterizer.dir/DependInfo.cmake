@@ -4,9 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/liuchu/Downloads/Assignment1/代码框架/Triangle.cpp" "/Users/liuchu/Downloads/Assignment1/代码框架/build/CMakeFiles/Rasterizer.dir/Triangle.cpp.o"
-  "/Users/liuchu/Downloads/Assignment1/代码框架/main.cpp" "/Users/liuchu/Downloads/Assignment1/代码框架/build/CMakeFiles/Rasterizer.dir/main.cpp.o"
-  "/Users/liuchu/Downloads/Assignment1/代码框架/rasterizer.cpp" "/Users/liuchu/Downloads/Assignment1/代码框架/build/CMakeFiles/Rasterizer.dir/rasterizer.cpp.o"
+  "/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/Triangle.cpp" "/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/build/CMakeFiles/Rasterizer.dir/Triangle.cpp.o"
+  "/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/main.cpp" "/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/build/CMakeFiles/Rasterizer.dir/main.cpp.o"
+  "/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/rasterizer.cpp" "/Users/liuchu/Downloads/Assignment1/CG-learning/chapter1/build/CMakeFiles/Rasterizer.dir/rasterizer.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 
