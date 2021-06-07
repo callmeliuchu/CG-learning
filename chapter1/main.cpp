@@ -18,23 +18,47 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
 
     return view;
 }
+Eigen::Matrix4f get_rotation_model_matrix(Eigen::Vector3f axis,float rotation_angle)
+{
+    Eigen::Matrix4f rotationModel;
+    const double pi = acos(-1.0);
+    float thea = rotation_angle*pi/180;
+    Eigen::Matrix3f tmp0;
+    float x = axis[0];
+    float y = axis[1];
+    float z = axis[2];
+    tmp0<< 0,-z,y,z,0,-x,-y,x,0;
+    Eigen::Matrix3f tmp = (1-cos(thea))*axis*axis.transpose() + cos(thea)*Eigen::Matrix3f::Identity()
+    +sin(thea)*tmp0;
+    rotationModel<< tmp(0,0),tmp(0,1),tmp(0,2),0,tmp(1,0),tmp(1,1),tmp(1,2),0,tmp(2,0),tmp(2,1),tmp(2,2),0,0,0,0,1;
+    return rotationModel;
+}
+
+
 
 Eigen::Matrix4f get_model_matrix(float rotation_angle)
 {
-    Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
+    // Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
 
-    // TODO: Implement this function
-    // Create the model matrix for rotating the triangle around the Z axis.
-    // Then return it.
-    Eigen::Matrix4f translate;
-    const double pi = acos(-1.0);
-    float c = cos(rotation_angle*pi/180);
-    float s = sin(rotation_angle*pi/180);
-    translate << c, -s, 0, 0, s, c, 0, 0, 0, 0, 1,
-        0, 0, 0, 0, 1;
+    // // TODO: Implement this function
+    // // Create the model matrix for rotating the triangle around the Z axis.
+    // // Then return it.
+    // Eigen::Matrix4f translate;
+    // const double pi = acos(-1.0);
+    // float c = cos(rotation_angle*pi/180);
+    // float s = sin(rotation_angle*pi/180);
+    // translate << c, -s, 0, 0, s, c, 0, 0, 0, 0, 1,
+    //     0, 0, 0, 0, 1;
 
-    return translate*model;
+    // return translate*model;
+    Eigen::Vector3f axis;
+    axis<<0.3,0.4,0.5;
+    return get_rotation_model_matrix(axis,rotation_angle);
 }
+
+
+
+
 
 Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
                                       float zNear, float zFar)
