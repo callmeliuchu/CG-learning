@@ -50,6 +50,19 @@ Eigen::Matrix4f get_model_matrix(float angle)
 Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float zNear, float zFar)
 {
     // TODO: Use the same projection matrix from the previous assignments
+    
+    Eigen::Matrix4f projection ;
+
+    // TODO: Implement this function
+    // Create the projection matrix for the given parameters.
+    // Then return it.
+    float n = zNear;
+    float f = zFar;
+    const double pi = acos(-1.0);
+    float t =  (-n)*tan(eye_fov*pi/180/2);
+    float r = t/aspect_ratio;
+    projection << n/r,0,0,0,0,n/t,0,0,0,0,(f+n)/(f-n),2*f*n/(f-n),0,0,1,0;
+    return projection;
 
 }
 
@@ -138,11 +151,26 @@ Eigen::Vector3f phong_fragment_shader(const fragment_shader_payload& payload)
     Eigen::Vector3f normal = payload.normal;
 
     Eigen::Vector3f result_color = {0, 0, 0};
+    Vector3f view_dir = (eye_pos - point).normalized();
     for (auto& light : lights)
     {
         // TODO: For each light source in the code, calculate what the *ambient*, *diffuse*, and *specular* 
         // components are. Then, accumulate that result on the *result_color* object.
-        
+        float rr = (light.position - point).squaredNorm();
+        Vector3f diffsue(0,0,0);
+        Vector3f specular(0,0,0);
+        Vector3f ambient(0,0,0);
+        Vector3f light_dir = (light.position - point).normalized();
+        for(size_t i=0;i<3;i++){
+            Vector3f h = (view_dir + light_dir).normalized();
+            float intensity = light.intensity[i]/rr;
+            diffsue[i] = kd[i]*intensity*std::max(0.0f,normal.dot(light_dir))/rr;
+            specular[i] = ks[i]*intensity*std::pow(std::max(0.0f,normal.dot(h)),p);
+            ambient[i] = amb_light_intensity[i] * ka[i];
+        }
+        result_color += diffsue;
+        result_color += specular;
+        result_color += ambient;
     }
 
     return result_color * 255.f;
@@ -189,9 +217,7 @@ Eigen::Vector3f displacement_fragment_shader(const fragment_shader_payload& payl
     for (auto& light : lights)
     {
         // TODO: For each light source in the code, calculate what the *ambient*, *diffuse*, and *specular* 
-        // components are. Then, accumulate that result on the *result_color* object.
-
-
+        // components are. Then, accumulate that result on the *result_color* object
     }
 
     return result_color * 255.f;

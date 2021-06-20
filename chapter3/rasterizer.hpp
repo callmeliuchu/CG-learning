@@ -5,7 +5,7 @@
 #pragma once
 
 #include <eigen3/Eigen/Eigen>
-#include <optional>
+#include <experimental/optional>
 #include <algorithm>
 #include "global.hpp"
 #include "Shader.hpp"
@@ -103,7 +103,7 @@ namespace rst
         std::map<int, std::vector<Eigen::Vector3f>> col_buf;
         std::map<int, std::vector<Eigen::Vector3f>> nor_buf;
 
-        std::optional<Texture> texture;
+        std::experimental::optional<Texture> texture;
 
         std::function<Eigen::Vector3f(fragment_shader_payload)> fragment_shader;
         std::function<Eigen::Vector3f(vertex_shader_payload)> vertex_shader;

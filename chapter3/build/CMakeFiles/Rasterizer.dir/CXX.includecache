@@ -24,22 +24,12 @@ eigen3/Eigen/Eigen
 Texture.hpp
 /Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/Texture.hpp
 
-/Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/Texture.cpp
-
 /Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/Texture.hpp
 global.hpp
 /Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/global.hpp
 eigen3/Eigen/Eigen
 -
 opencv2/opencv.hpp
--
-
-/Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/Triangle.cpp
-Triangle.hpp
-/Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/Triangle.hpp
-algorithm
--
-array
 -
 
 /Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/Triangle.hpp
@@ -68,20 +58,10 @@ Texture.hpp
 OBJ_Loader.h
 /Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/OBJ_Loader.h
 
-/Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/rasterizer.cpp
-algorithm
--
-rasterizer.hpp
-/Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/rasterizer.hpp
-opencv2/opencv.hpp
--
-math.h
--
-
 /Users/liuchu/Downloads/Assignment1/CG-learning/chapter3/rasterizer.hpp
 eigen3/Eigen/Eigen
 -
-optional
+experimental/optional
 -
 algorithm
 -
