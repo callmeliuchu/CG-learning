@@ -339,7 +339,7 @@ rst::rasterizer::rasterizer(int w, int h) : width(w), height(h)
     frame_buf.resize(w * h);
     depth_buf.resize(w * h);
 
-    texture = std::experimental::nullopt;
+    texture = std::nullopt;
 }
 
 int rst::rasterizer::get_index(int x, int y)

@@ -1,0 +1,3 @@
+/Users/liuchu/CG-learning/chapter4/build/CMakeFiles/rebuild_cache.dir
+/Users/liuchu/CG-learning/chapter4/build/CMakeFiles/edit_cache.dir
+/Users/liuchu/CG-learning/chapter4/build/CMakeFiles/BezierCurve.dir
