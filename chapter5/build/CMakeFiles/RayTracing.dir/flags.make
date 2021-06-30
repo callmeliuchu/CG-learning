@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = 
 
-CXX_FLAGS =  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk -Wall -Wextra -pedantic -Wshadow -Wreturn-type -fsanitize=undefined -std=gnu++17
+CXX_FLAGS =  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk -Wall -Wextra -pedantic -Wshadow -Wreturn-type -std=gnu++17
 
