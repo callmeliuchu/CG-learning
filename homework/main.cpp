@@ -2,6 +2,7 @@
 #include "ray.hpp"
 #include "Vector.hpp"
 #include "Sphere.hpp"
+#include "hittable_list.h"
 
 #include <iostream>
 
@@ -40,6 +41,11 @@ int main() {
     const int image_width = 400;
     const int image_height = int(image_width / aspect_ratio);
 
+
+    //world
+
+    hittable_list world;
+    world.add(make_shared<Sphere>(Vector3f(0,0,-1),0.5));
 
     //camera
     auto viewport_height = 2.0;

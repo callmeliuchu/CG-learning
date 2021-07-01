@@ -1,3 +1,6 @@
+#ifndef RAY_H
+#define RAY_H
+
 #include "Vector.hpp"
 
 class ray{
@@ -17,3 +20,5 @@ class ray{
 
 
 };
+
+#endif
