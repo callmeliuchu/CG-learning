@@ -1,5 +1,4 @@
-#ifndef RAY_H
-#define RAY_H
+#pragma once
 
 #include "Vector.hpp"
 
@@ -15,10 +14,6 @@ class ray{
         Vector3f at(double t) const {
             return orig + t*dir;
         }
-    
-
-
-
 };
 
-#endif
+

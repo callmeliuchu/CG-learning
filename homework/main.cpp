@@ -3,6 +3,7 @@
 #include "Vector.hpp"
 #include "Sphere.hpp"
 #include "hittable_list.h"
+#include "camera.hpp"
 
 #include <iostream>
 
@@ -19,17 +20,17 @@ float hit_sphere(const ray& r,const Sphere& sphere){
     }
     return (-b-sqrt(delta))/(2*a);
 }
-Vector3f ray_color(const ray& r){
-    Vector3f c = Vector3f(0,0,-1);
-    auto t = hit_sphere(r,Sphere(c,0.5));
-    if(t > 0){
-        std::cout<<t<<std::endl;
-        Vector3f point = r.at(t);
-        Vector3f N = point - c;
-        return 0.5*Vector3f(N.x+1,N.y+1,N.z+1);
+Vector3f ray_color(const ray& r, const hittable_list& world,int depth){
+    if(depth <= 0){
+        return Vector3f(0,0,0);
+    }
+    hit_record rec;
+    if(world.hit(r,0,1000,rec)){
+        Vector3f target = rec.p + rec.normal + random_in_unit_sphere();
+        return 0.5*ray_color(ray(rec.p,target-rec.p),world,depth-1);
     }
     Vector3f unit_direction = normalize(r.direction());
-    t = 0.5*(unit_direction.y + 1.0);
+    auto t = 0.5*(unit_direction.y + 1.0);
     return (1-t)*Vector3f(1.0,1.0,1.0) + t*Vector3f(0.5,0.7,1.0);
 }
 
@@ -40,24 +41,18 @@ int main() {
     const auto aspect_ratio = 16.0 / 9.0;
     const int image_width = 400;
     const int image_height = int(image_width / aspect_ratio);
+    const int samples_per_pixel = 100;
+    const int max_depth = 50;
 
 
     //world
 
     hittable_list world;
     world.add(make_shared<Sphere>(Vector3f(0,0,-1),0.5));
+    world.add(make_shared<Sphere>(Vector3f(0.5,0.5,-1),0.3));
 
     //camera
-    auto viewport_height = 2.0;
-    auto viewport_width = aspect_ratio * viewport_height;
-    auto focal_length = 1.0;
-
-    auto origin = Vector3f(0,0,0);
-    auto horizontal = Vector3f(viewport_width,0,0);
-    auto vertical = Vector3f(0,viewport_height,0);
-    auto lower_left_corner = origin - horizontal/2 
-        - vertical / 2 - Vector3f(0,0,focal_length);
-    
+    camera cam;
 
     // Render
 
@@ -66,11 +61,14 @@ int main() {
     for (int j = image_height-1; j >= 0; --j) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < image_width; ++i) {
-        auto u = double(i) / (image_width-1);
-            auto v = double(j) / (image_height-1);
-            ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
-            Vector3f pixel_color = ray_color(r);
-            write_color(std::cout, pixel_color);
+            Vector3f pixel_color(0,0,0);
+            for(int s=0;s<samples_per_pixel;s++){
+                auto u = (double(i) + random_double())/ (image_width-1);
+                auto v = (double(j) + random_double()) / (image_height-1);
+                ray r = cam.get_ray(u,v);
+                pixel_color += ray_color(r,world,max_depth);
+            }
+            write_color(std::cout, pixel_color,samples_per_pixel);
         }
     }
 

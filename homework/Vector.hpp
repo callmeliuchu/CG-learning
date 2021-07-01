@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include "rtweekend.hpp"
 
 class Vector3f
 {
@@ -113,4 +114,20 @@ inline float dotProduct(const Vector3f& a, const Vector3f& b)
 inline Vector3f crossProduct(const Vector3f& a, const Vector3f& b)
 {
     return Vector3f(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+}
+
+inline static Vector3f random_v(){
+    return Vector3f(random_double(),random_double(),random_double());
+}
+
+inline static Vector3f random_v(double min,double max){
+    return Vector3f(random_double(min,max),random_double(min,max),random_double(min,max));
+}
+
+Vector3f random_in_unit_sphere(){
+    while(true){
+        auto p = random_v(-1,1);
+        if(dotProduct(p,p) >= 1)continue;
+        return p;
+    }
 }

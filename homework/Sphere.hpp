@@ -26,7 +26,18 @@ bool Sphere::hit(const ray& r,double t_min,double t_max,hit_record& rec) const {
     float c = dotProduct(o2,o2) + 4*dotProduct(o1,o1) - 4*dotProduct(o1,o2) - radius2;
     float delta = b*b - 4*a*c;
     if(delta < 0){
-        return -1.0;
+        return false;
     }
-    return (-b-sqrt(delta))/(2*a);
+    float root = (-b-sqrt(delta))/(2*a);
+    if (root < t_min || t_max < root) {
+        root = (-b+sqrt(delta))/(2*a);
+        if (root < t_min || t_max < root)
+            return false;
+    }
+
+    rec.t = root;
+    rec.p = r.at(rec.t);
+    rec.normal = (rec.p - center) / radius;
+
+    return true;
 }
