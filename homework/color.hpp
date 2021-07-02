@@ -15,8 +15,12 @@ void write_color(std::ostream &out, Vector3f pixel_color,int sample_per_pix) {
     g *= scale;
     b *= scale;
 
+    r = sqrt(r);
+    g = sqrt(g);
+    b = sqrt(b);
 
-    out << static_cast<int>(255.999 * clamp(r,0,0.9999)) << ' '
-        << static_cast<int>(255.999 * clamp(g,0,0.9999)) << ' '
-        << static_cast<int>(255.999 * clamp(b,0,0.9999)) << '\n';
+
+    out << static_cast<int>(256 * clamp(r,0,0.9999)) << ' '
+        << static_cast<int>(256 * clamp(g,0,0.9999)) << ' '
+        << static_cast<int>(256 * clamp(b,0,0.9999)) << '\n';
 }

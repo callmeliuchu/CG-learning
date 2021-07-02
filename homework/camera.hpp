@@ -1,5 +1,5 @@
 #pragma once
-
+#include "ray.hpp"
 #include "rtweekend.hpp"
 
 

@@ -28,16 +28,16 @@ bool Sphere::hit(const ray& r,double t_min,double t_max,hit_record& rec) const {
     if(delta < 0){
         return false;
     }
-    float root = (-b-sqrt(delta))/(2*a);
+    float root = (-b-sqrtf(delta))/(2*a);
     if (root < t_min || t_max < root) {
-        root = (-b+sqrt(delta))/(2*a);
+        root = (-b+sqrtf(delta))/(2*a);
         if (root < t_min || t_max < root)
             return false;
     }
 
     rec.t = root;
     rec.p = r.at(rec.t);
-    rec.normal = (rec.p - center) / radius;
-
+    Vector3f outward_normal = (rec.p - center)/radius;
+    rec.set_face_normal(r,outward_normal);
     return true;
 }

@@ -4,7 +4,6 @@
 #include <cmath>
 #include <limits>
 #include <memory>
-#include "ray.hpp"
 #include "Vector.hpp"
 
 
