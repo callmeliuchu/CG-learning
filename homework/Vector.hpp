@@ -22,6 +22,10 @@ public:
         , y(yy)
         , z(zz)
     {}
+    bool near_zero() const{
+        const auto s = 1e-8;
+        return (fabs(x<s)) && (fabs(y<s)) && (fabs(z<s));
+    }
     Vector3f operator*(const float& r) const
     {
         return Vector3f(x * r, y * r, z * r);
@@ -130,4 +134,12 @@ Vector3f random_in_unit_sphere(){
         if(dotProduct(p,p) >= 1)continue;
         return p;
     }
+}
+
+Vector3f random_in_unit_vector(){
+    return normalize(random_in_unit_sphere());
+}
+
+Vector3f reflect(const Vector3f& v,const Vector3f& n){
+    return v - 2*dotProduct(v,n)*n;
 }

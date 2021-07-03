@@ -10,10 +10,17 @@ public:
         , radius(r)
         , radius2(r * r)
     {};
+    Sphere(const Vector3f& c, const float& r,shared_ptr<material>m)
+        : center(c)
+        , radius(r)
+        , radius2(r * r)
+        , mat_ptr(m)
+    {};
     virtual bool hit(const ray& r,double t_min, double t_max, hit_record& rec)const override;
 
     Vector3f center;
     float radius, radius2;
+    shared_ptr<material> mat_ptr;
 };
 
 
@@ -55,5 +62,6 @@ bool Sphere::hit(const ray& r,double t_min,double t_max,hit_record& rec) const {
     rec.p = r.at(rec.t);
     Vector3f outward_normal = (rec.p - center)/radius;
     rec.set_face_normal(r,outward_normal);
+    rec.mat_ptr = mat_ptr;
     return true;
 }
