@@ -10,11 +10,24 @@
 
 Vector3f ray_color(const ray& r, const hittable_list& world,int depth){
     if(depth <= 0){
-        return Vector3f(0,0,0);
+        return Vector3f(0.1,0.1,0.1);
     }
     hit_record rec;
-    if(world.hit(r,0,infinity,rec)){
+    if(world.hit(r,0.001,infinity,rec)){
         Vector3f target = rec.p + rec.normal + random_in_unit_sphere();
+        // Vector3f n = target-rec.p;
+        // return 0.5 * (rec.normal + Vector3f(1,1,1));
+        // std::cout<<"ray orig:   "<<r.orig<<std::endl;
+        // std::cout<<"ray direction:"<<r.direction()<<std::endl;
+        // std::cout<<"front_face: "<<rec.front_face<<std::endl;
+        // std::cout<<"p       : "<<rec.p.x<<' '<<rec.p.y<<' '<<rec.p.z<<std::endl;
+        // std::cout<<"p.normal: "<<rec.normal.x<<' '<<rec.normal.y<<' '<<rec.normal.z<<std::endl;
+        // Vector3f center1 = rec.p - rec.normal*0.5;
+        // Vector3f center2 = rec.p + rec.normal*0.5;
+        // std::cout<<"center1  : "<<center1.x<<' '<<center1.y<<' '<<center1.z<<std::endl;
+        // std::cout<<"center2  : "<<center2.x<<' '<<center2.y<<' '<<center2.z<<std::endl;
+        // std::cout<<"target  : "<<target.x<<' '<<target.y<<' '<<target.z<<std::endl;
+        // std::cout<<"----------------------------------"<<std::endl;
         return 0.5*ray_color(ray(rec.p,target-rec.p),world,depth-1);
     }
     Vector3f unit_direction = normalize(r.direction());
@@ -30,14 +43,15 @@ int main() {
     const int image_width = 400;
     const int image_height = int(image_width / aspect_ratio);
     const int samples_per_pixel = 100;
-    const int max_depth = 60;
+    const int max_depth = 50;
 
 
     //world
 
     hittable_list world;
     world.add(make_shared<Sphere>(Vector3f(0,0,-1),0.5));
-    // world.add(make_shared<Sphere>(Vector3f(0,-100.5,-1), 100));
+    world.add(make_shared<Sphere>(Vector3f(0,-100.5,-1), 100));
+
 
     //camera
     camera cam;
