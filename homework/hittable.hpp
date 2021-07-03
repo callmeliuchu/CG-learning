@@ -1,6 +1,7 @@
 #pragma once
 #include "ray.hpp"
-#include "material.hpp"
+
+class material;
 
 
 struct hit_record {

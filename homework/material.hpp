@@ -1,10 +1,11 @@
 #pragma once
-#define MATERIAL_H
+
 
 #include "rtweekend.hpp"
 #include "ray.hpp"
-#include "hittable.hpp" 
 
+
+struct hit_record;
 
 class material{
     public:

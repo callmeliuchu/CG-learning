@@ -5,6 +5,7 @@
 #include "hittable_list.h"
 #include "camera.hpp"
 #include "material.hpp"
+#include "hittable.hpp"
 
 #include <iostream>
 
