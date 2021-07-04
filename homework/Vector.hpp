@@ -143,3 +143,21 @@ Vector3f random_in_unit_vector(){
 Vector3f reflect(const Vector3f& v,const Vector3f& n){
     return v - 2*dotProduct(v,n)*n;
 }
+
+Vector3f refract(const Vector3f& uv,const Vector3f& n,double etai_over_etat){
+    auto cos_theta = fmin(dotProduct(-uv,n),1);
+    Vector3f r_out_perp = etai_over_etat*(uv + cos_theta*n);
+    Vector3f r_out_parallel = -sqrt(fabs(1.0-dotProduct(r_out_perp,r_out_perp)))*n;
+    return r_out_perp + r_out_parallel;
+}
+
+
+Vector3f random_in_unit_disk(){
+    while(true){
+        auto p = Vector3f(random_double(-1,1),random_double(-1,1),0);
+        if(dotProduct(p,p) >= 1){
+            continue;
+        }
+        return p;
+    }
+}

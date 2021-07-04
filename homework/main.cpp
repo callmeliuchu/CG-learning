@@ -32,7 +32,7 @@ int main() {
 
     // Image
 
-    const auto aspect_ratio = 16.0 / 9.0;
+    const double aspect_ratio = 16.0 / 9.0;
     const int image_width = 400;
     const int image_height = int(image_width / aspect_ratio);
     const int samples_per_pixel = 100;
@@ -40,24 +40,28 @@ int main() {
 
 
     //world
-
+    // auto R = cos(pi/4);
     hittable_list world;
 
     auto material_ground = make_shared<lambertian>(Vector3f(0.8, 0.8, 0.0));
-    auto material_center = make_shared<lambertian>(Vector3f(0.7, 0.3, 0.3));
-    auto material_left   = make_shared<metal>(Vector3f(0.8, 0.8, 0.8));
-    auto material_right  = make_shared<metal>(Vector3f(0.8, 0.6, 0.2));
-
+    auto material_center = make_shared<lambertian>(Vector3f(0.1, 0.2, 0.5));
+    auto material_left   = make_shared<dielectric>(1.5);
+    auto material_right  = make_shared<metal>(Vector3f(0.8, 0.6, 0.2), 0.0);
 
     world.add(make_shared<Sphere>(Vector3f( 0.0, -100.5, -1.0), 100.0, material_ground));
     world.add(make_shared<Sphere>(Vector3f( 0.0,    0.0, -1.0),   0.5, material_center));
     world.add(make_shared<Sphere>(Vector3f(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.add(make_shared<Sphere>(Vector3f(-1.0,    0.0, -1.0), -0.45, material_left));
     world.add(make_shared<Sphere>(Vector3f( 1.0,    0.0, -1.0),   0.5, material_right));
 
+    Vector3f lookfrom(3,3,2);
+    Vector3f lookat(0,0,-1);
+    Vector3f vup(0,1,0);
+    Vector3f w = lookfrom-lookat;
+    auto dist_to_focus = sqrt(dotProduct(w,w));
+    auto aperture = 3.0;
 
-    //camera
-    camera cam;
-
+    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
     // Render
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
