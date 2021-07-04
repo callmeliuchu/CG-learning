@@ -64,6 +64,9 @@ public:
     {
         return os << v.x << ", " << v.y << ", " << v.z;
     }
+    double length(){
+        return sqrt(x*x+y*y+z*z);
+    }
     float x, y, z;
 };
 
