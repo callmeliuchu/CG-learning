@@ -34,8 +34,8 @@ hittable_list random_scene(){
     auto ground_material = make_shared<lambertian>(Vector3f(0.5,0.5,0.5));
     world.add(make_shared<Sphere>(Vector3f(0,-1000,0),1000,ground_material));
   
-    for (int a = -11; a < 11; a++) {
-        for (int b = -11; b < 11; b++) {
+    for (int a = 0; a < 11; a++) {
+        for (int b = 0; b < 11; b++) {
             auto choose_mat = random_double();
             Vector3f center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
 
@@ -104,13 +104,13 @@ int main() {
     // world.add(make_shared<Sphere>(Vector3f(-1.0,    0.0, -1.0), -0.45, material_left));
     // world.add(make_shared<Sphere>(Vector3f( 1.0,    0.0, -1.0),   0.5, material_right));
 
-    Vector3f lookfrom(13,3,2);
+    Vector3f lookfrom(0,0,5);
     Vector3f lookat(0,0,0);
     Vector3f vup(0,1,0);
     auto dist_to_focus = 10;
     auto aperture = 0.1;
 
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
+    camera cam(lookfrom, lookat, vup, 50, aspect_ratio, aperture, dist_to_focus);
     // Render
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
