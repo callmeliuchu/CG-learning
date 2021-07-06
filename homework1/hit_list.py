@@ -12,10 +12,10 @@ class HitList(Hittable):
 
     def hit(self,ray,start,end):
         max_end = end
-        hit_res = HitRecord(False)
+        hit_res = HitRecord()
         for obj in self.obj_list:
-            hit_record = obj.hit(ray,start,max_end)
-            if hit_record.is_hit:
-                hit_res = hit_record
-                max_end = hit_record.closest_far
+            hit_rec = obj.hit(ray,start,max_end)
+            if hit_rec.is_hit:
+                max_end = hit_rec.dist
+                hit_res = hit_rec
         return hit_res

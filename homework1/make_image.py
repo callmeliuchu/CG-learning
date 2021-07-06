@@ -6,19 +6,42 @@ import math
 from ray import Ray
 from hit_list import HitList
 from sphere import Sphere
+from camera import Camera
+from material import Lambertian,Metal
 
 
-def write_color(color):
-    print(int(255*color.x),int(255*color.y),int(255*color.z))
+def clamp(v,bg,ed):
+    if v < bg:
+        return bg
+    if v > ed:
+        return ed
+    return v
+
+
+def write_color(color,sample_per_pix):
+    r = color.x
+    g = color.y
+    b = color.z
+    scale = 1/sample_per_pix
+    r = r*scale
+    g = g*scale
+    b = b*scale
+
+    r = math.sqrt(r)
+    g = math.sqrt(g)
+    b = math.sqrt(b)
+    print(int(255*clamp(r,0,0.9999)),int(255*clamp(g,0,0.99)),int(255*clamp(b,0,0.999)))
 
 
 def ray_color(ray,world,depth):
     if depth <= 0:
         return Color(0,0,0)
-    hit_record = world.hit(ray,0,100000)
+    hit_record = world.hit(ray,0.001,100000)
     if hit_record.is_hit:
-        u = hit_record.normal
-        return 0.5*Color(u.x+1,u.y+1,u.z+1)
+        hit_record.material.scatter(hit_record)
+        if hit_record.can_scatter():
+            attenuation = hit_record.attenuation
+            return attenuation*ray_color(Ray(hit_record.hit_point,hit_record.out_light_dir),world,depth-1)
     v = ray.direction.normalize()
     t = 0.5*(v.y + 1.0)
     return (1.0 - t) * Vector3f(1.0, 1.0, 1.0) + t * Vector3f(0.5, 0.7, 1.0)
@@ -32,34 +55,33 @@ if __name__ == '__main__':
 
 
     #camera
-    orig = Point(0,0,0)
-    fov = 90
-    h = 2*math.tan(math.radians(fov/2))
-    w = h*aspect_ratio
-    vertical = Vector3f(0,h,0)
-    horizontal = Vector3f(w,0,0)
-    front = Vector3f(0,0,1)
-    lower_left = orig - vertical*0.5 - horizontal*0.5 - front
+    cam = Camera(aspect_ratio,20)
 
 
     #world
     world = HitList()
-    sphere1 = Sphere(Point(0, 0, -3),1)
-    sphere2 = Sphere(Point(0,-100,-4),100)
+    lamber1 = Lambertian(Color(0.3,0.4,0.4))
+    sphere1 = Sphere(Point(0,0,-1), 0.5,lamber1)
+    lamber3 = Metal(Color(0.3,0.8,0.4),0.3)
+    sphere3 = Sphere(Point(0.5,0,-1), 0.5,lamber3)
+    lamber2 = Metal(Color(0.6, 0.5, 0.3),0.2)
+    sphere2 = Sphere(Point(0,-100.5,-1), 100,lamber2)
     world.add(sphere1)
-    # world.add(sphere2)
+    world.add(sphere2)
+    world.add(sphere3)
 
-    depth = 10
-
+    depth = 20
+    sample_per_pix = 10
 
     print("P3")
     print(width,height)
     print(255)
     for i in range(height-1,-1,-1):
         for j in range(width):
-            u = j /(width-1)
-            v = (1.0*i)/ (height-1)
-            target = lower_left + u*horizontal + v*vertical
-            a_ray = Ray(orig,(target-orig).normalize())
-            color = ray_color(a_ray,world,depth)
-            write_color(color)
+            color = Color(0,0,0)
+            for k in range(sample_per_pix):
+                u = (j+random.random())/(width-1)
+                v = (i+random.random())/(height-1)
+                a_ray = cam.get_ray(u,v)
+                color += ray_color(a_ray,world,depth)
+            write_color(color,sample_per_pix)

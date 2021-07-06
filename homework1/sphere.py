@@ -1,34 +1,32 @@
 from hittable import Hittable
-from vector import dot_product,length
-from hitrecord import HitRecord
+from vector import dot_product
 import math
+from hitrecord import HitRecord
 
 
 
 class Sphere(Hittable):
 
-    def __init__(self,center,radius):
+    def __init__(self,center,radius,material):
         self.center = center
         self.radius = radius
+        self.material = material
 
     def hit(self,ray,start,end):
-        direct = ray.direction
-        orig = ray.orig
-        center = self.center
-        a = dot_product(direct,direct)
-        b = 4*dot_product(orig,direct) - 2*dot_product(direct,center)
-        c = 4*dot_product(orig,orig) + dot_product(center,center) \
-            - 4*dot_product(orig,center) - self.radius*self.radius
-        delta = b*b - 4*a*c
+        oc = ray.orig - self.center
+        a = dot_product(ray.direction,ray.direction)
+        half_b = dot_product(oc,ray.direction)
+        c = dot_product(oc,oc) - self.radius*self.radius
+        delta = half_b*half_b - a*c
         if delta < 0:
-            return HitRecord(False)
-        x1 = (-b-math.sqrt(delta))/(2*a)
-        t = x1
-        if x1 < start or x1 > end:
-            x2 = (-b+math.sqrt(delta))/(2*a)
-            t = x2
-            if x2 < start or x2 > end:
-                return HitRecord(False)
+            return HitRecord()
+        t = (-half_b-math.sqrt(delta))/a
+        if t < start or t > end:
+            t = (-half_b+math.sqrt(delta))/a
+            if t < start or t > end:
+                return HitRecord()
         hit_point = ray.at(t)
-        normal = hit_point - center
-        return HitRecord(True,hit_point,normal.normalize(),t,direct)
+        normal = (hit_point - self.center)*(1/self.radius)
+        hit_record = HitRecord(hit_point,ray.direction,t,self.material)
+        hit_record.set_normal(normal)
+        return hit_record
