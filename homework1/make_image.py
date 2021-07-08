@@ -1,3 +1,5 @@
+import random
+
 from utils import *
 from vector import Vector3f as Color
 from vector import Vector3f as Point
@@ -7,7 +9,9 @@ from ray import Ray
 from hit_list import HitList
 from sphere import Sphere
 from camera import Camera
-from material import Lambertian,Metal
+from material import Lambertian,Metal,Dielectric
+import sys
+from moving_sphere import MovingSphere
 
 
 def clamp(v,bg,ed):
@@ -41,10 +45,47 @@ def ray_color(ray,world,depth):
         hit_record.material.scatter(hit_record)
         if hit_record.can_scatter():
             attenuation = hit_record.attenuation
-            return attenuation*ray_color(Ray(hit_record.hit_point,hit_record.out_light_dir),world,depth-1)
+            return attenuation*ray_color(Ray(hit_record.hit_point,hit_record.out_light_dir,ray.tm),world,depth-1)
     v = ray.direction.normalize()
     t = 0.5*(v.y + 1.0)
     return (1.0 - t) * Vector3f(1.0, 1.0, 1.0) + t * Vector3f(0.5, 0.7, 1.0)
+
+
+
+
+def random_scene():
+    world = HitList()
+    ground_material = Lambertian(Color(0.5,0.5,0.5))
+    world.add(Sphere(Point(0,-1000,0),1000,ground_material))
+    for i in range(-4,4):
+        for j in range(-4,4):
+            choose = random.uniform(0,1)
+            center = Point(i+0.9*random.uniform(0,1),0.2,j+0.9*random.uniform(0,1))
+            if (center - Point(4,0.2,0.2)).length() > 0.9:
+                if choose < 0.8:
+                    albedo = Color(random.uniform(0.5,1),random.uniform(0.5,1),random.uniform(0.5,1))*\
+                    Color(random.uniform(0.5, 1), random.uniform(0.5, 1), random.uniform(0.5, 1))
+                    material = Lambertian(albedo)
+                    center2 = center + Vector3f(0,random.uniform(0,0.5),0)
+                    world.add(MovingSphere(center,center2,0,1,0.2,material))
+                elif choose < 0.95:
+                    albedo = Color(random.uniform(0.5,1),random.uniform(0.5,1),random.uniform(0.5,1))
+                    fuzz = random.uniform(0,0.5)
+                    material = Metal(albedo,fuzz)
+                    world.add(Sphere(center,0.2,material))
+                else:
+                    material = Dielectric(1.5)
+                    world.add(Sphere(center,0.2,material))
+    material1 = Dielectric(1.5)
+    world.add(Sphere(Point(0,1,0),1.0,material1))
+
+    material2 = Lambertian(Color(0.4,0.2,0.1))
+    world.add(Sphere(Point(-4,1,0),1.0,material2))
+
+    material3 = Metal(Color(0.7,0.6,0.5),0.0)
+    world.add(Sphere(Point(4,1,0),1.0,material3))
+    return world
+
 
 
 if __name__ == '__main__':
@@ -55,21 +96,19 @@ if __name__ == '__main__':
 
 
     #camera
-    cam = Camera(aspect_ratio,20)
+    look_from = Point(13,2,3)
+    look_at = Point(0,0,0)
+    vup = Vector3f(0,1,0)
+    dist_to_focus = 10.0
+    aperture = 0.1
+    cam = Camera(look_from,look_at,vup,aspect_ratio,20,aperture,dist_to_focus)
 
 
     #world
-    world = HitList()
-    lamber1 = Lambertian(Color(0.3,0.4,0.4))
-    sphere1 = Sphere(Point(0,0,-1), 0.5,lamber1)
-    lamber3 = Metal(Color(0.3,0.8,0.4),0.3)
-    sphere3 = Sphere(Point(0.5,0,-1), 0.5,lamber3)
-    lamber2 = Metal(Color(0.6, 0.5, 0.3),0.2)
-    sphere2 = Sphere(Point(0,-100.5,-1), 100,lamber2)
-    world.add(sphere1)
-    world.add(sphere2)
-    world.add(sphere3)
+    world = random_scene()
 
+
+    #render
     depth = 20
     sample_per_pix = 10
 
@@ -77,11 +116,13 @@ if __name__ == '__main__':
     print(width,height)
     print(255)
     for i in range(height-1,-1,-1):
+        sys.stderr.write('left {}\n'.format(i))
+        sys.stderr.flush()
         for j in range(width):
             color = Color(0,0,0)
             for k in range(sample_per_pix):
                 u = (j+random.random())/(width-1)
                 v = (i+random.random())/(height-1)
-                a_ray = cam.get_ray(u,v)
+                a_ray = cam.get_ray(u,v,random.uniform(0,1))
                 color += ray_color(a_ray,world,depth)
             write_color(color,sample_per_pix)

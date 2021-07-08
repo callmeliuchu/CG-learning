@@ -36,7 +36,7 @@ class Vector3f:
         return normalize(self)
 
     def length(self):
-        return dot_product(self,self)
+        return math.sqrt(dot_product(self,self))
 
 
 def dot_product(u,v):
@@ -47,6 +47,12 @@ def dot_product(u,v):
 def length(u):
     return math.sqrt(dot_product(u, u))
 
+
 def normalize(u):
     return (1/length(u))*u
 
+
+def cross(u,v):
+    x1,y1,z1 = u.x,u.y,u.z
+    x2, y2, z2 = v.x, v.y, v.z
+    return Vector3f(y1*z2-z1*y2,z1*x2-x1*z2,x1*y2-y1*x2)

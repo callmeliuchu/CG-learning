@@ -2,7 +2,7 @@ from vector import dot_product
 
 
 class HitRecord:
-    def __init__(self,hit_point=None,ray_direct=None,dist=None,material=None):
+    def __init__(self,hit_point=None,ray_direct=None,dist=None,material=None,tm=None):
         self.hit_point = hit_point
         self.ray_direct = ray_direct
         self.dist = dist
@@ -11,6 +11,7 @@ class HitRecord:
         self.normal = None
         self.out_light_dir = None
         self.attenuation = None
+        self.tm = tm
 
     def set_normal(self,normal):
         self.front = dot_product(normal,self.ray_direct) < 0
