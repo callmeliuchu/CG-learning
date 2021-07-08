@@ -6,6 +6,7 @@
 #include "camera.hpp"
 #include "material.hpp"
 #include "hittable.hpp"
+#include "moving_sphere.hpp"
 
 #include <iostream>
 
@@ -34,8 +35,8 @@ hittable_list random_scene(){
     auto ground_material = make_shared<lambertian>(Vector3f(0.5,0.5,0.5));
     world.add(make_shared<Sphere>(Vector3f(0,-1000,0),1000,ground_material));
   
-    for (int a = 0; a < 11; a++) {
-        for (int b = 0; b < 11; b++) {
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
             auto choose_mat = random_double();
             Vector3f center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
 
@@ -46,7 +47,8 @@ hittable_list random_scene(){
                     // diffuse
                     auto albedo = random_v()*random_v();
                     sphere_material = make_shared<lambertian>(albedo);
-                    world.add(make_shared<Sphere>(center, 0.2, sphere_material));
+                    auto center2 = center + Vector3f(0,random_double(0,0.5),0);
+                    world.add(make_shared<moving_sphere>(center, center2,0.0,1.0,0.2, sphere_material));
                 } else if (choose_mat < 0.95) {
                     // metal
                     auto albedo = random_double(0.5, 1);
@@ -84,7 +86,7 @@ int main() {
     const int image_width = 1200.0;
     const int image_height = int(image_width / aspect_ratio);
     
-    const int samples_per_pixel = 10;
+    const int samples_per_pixel = 100;
     const int max_depth = 50;
 
 
@@ -104,13 +106,13 @@ int main() {
     // world.add(make_shared<Sphere>(Vector3f(-1.0,    0.0, -1.0), -0.45, material_left));
     // world.add(make_shared<Sphere>(Vector3f( 1.0,    0.0, -1.0),   0.5, material_right));
 
-    Vector3f lookfrom(0,0,5);
+    Vector3f lookfrom(13,2,3);
     Vector3f lookat(0,0,0);
     Vector3f vup(0,1,0);
     auto dist_to_focus = 10;
     auto aperture = 0.1;
 
-    camera cam(lookfrom, lookat, vup, 50, aspect_ratio, aperture, dist_to_focus);
+    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus,0.0,1.0);
     // Render
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
