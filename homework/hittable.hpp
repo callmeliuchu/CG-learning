@@ -9,6 +9,8 @@ struct hit_record {
     Vector3f normal;
     shared_ptr<material>mat_ptr;
     double t;
+    double u;
+    double v;
     bool front_face;
     inline void set_face_normal(const ray& r,const Vector3f& outward_normal){
         front_face = dotProduct(r.direction(),outward_normal) < 0;

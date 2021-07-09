@@ -7,7 +7,7 @@
 #include "material.hpp"
 #include "hittable.hpp"
 #include "moving_sphere.hpp"
-
+#include "texture.hpp"
 #include <iostream>
 
 
@@ -33,7 +33,8 @@ Vector3f ray_color(const ray& r, const hittable_list& world,int depth){
 hittable_list random_scene(){
     hittable_list world;
     auto ground_material = make_shared<lambertian>(Vector3f(0.5,0.5,0.5));
-    world.add(make_shared<Sphere>(Vector3f(0,-1000,0),1000,ground_material));
+    auto checker = make_shared<checker_texture>(Vector3f(0.2,0.3,0.1),Vector3f(0.9,0.9,0.9));
+    world.add(make_shared<Sphere>(Vector3f(0,-1000,0),1000,make_shared<lambertian>(checker)));
   
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
@@ -68,10 +69,10 @@ hittable_list random_scene(){
     world.add(make_shared<Sphere>(Vector3f(0, 1, 0), 1.0, material1));
 
     auto material2 = make_shared<lambertian>(Vector3f(0.4, 0.2, 0.1));
-    world.add(make_shared<Sphere>(Vector3f(-4, 1, 0), 1.0, material2));
+    world.add(make_shared<Sphere>(Vector3f(4, 1, 0), 1.0, make_shared<lambertian>(checker)));
 
-    auto material3 = make_shared<metal>(Vector3f(0.7, 0.6, 0.5), 0.0);
-    world.add(make_shared<Sphere>(Vector3f(4, 1, 0), 1.0, material3));
+    // auto material3 = make_shared<metal>(Vector3f(0.7, 0.6, 0.5), 0.0);
+    // world.add(make_shared<Sphere>(Vector3f(4, 1, 0), 1.0, material3));
 
     return world;
 }
@@ -83,11 +84,11 @@ int main() {
     // Image
 
     const double aspect_ratio = 16.0 / 9.0;
-    const int image_width = 1200.0;
+    const int image_width = 800.0;
     const int image_height = int(image_width / aspect_ratio);
     
-    const int samples_per_pixel = 100;
-    const int max_depth = 50;
+    const int samples_per_pixel = 50;
+    const int max_depth = 40;
 
 
 
@@ -106,13 +107,13 @@ int main() {
     // world.add(make_shared<Sphere>(Vector3f(-1.0,    0.0, -1.0), -0.45, material_left));
     // world.add(make_shared<Sphere>(Vector3f( 1.0,    0.0, -1.0),   0.5, material_right));
 
-    Vector3f lookfrom(13,2,3);
+    Vector3f lookfrom(5.6,5,3);
     Vector3f lookat(0,0,0);
     Vector3f vup(0,1,0);
     auto dist_to_focus = 10;
     auto aperture = 0.1;
 
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus,0.0,1.0);
+    camera cam(lookfrom, lookat, vup, 50, aspect_ratio, aperture, dist_to_focus,0.0,1.0);
     // Render
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
