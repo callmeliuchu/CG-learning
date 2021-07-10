@@ -30,6 +30,18 @@ Vector3f ray_color(const ray& r, const hittable_list& world,int depth){
 }
 
 
+hittable_list two_perlin_spheres(){
+    hittable_list objects;
+    auto pertext = make_shared<noise_texture>();
+    objects.add(make_shared<Sphere>(Vector3f(0,-1000,0),1000,make_shared<lambertian>(pertext)));
+    objects.add(make_shared<Sphere>(Vector3f(0,2,0),2,make_shared<lambertian>(pertext)));
+    return objects;
+}
+
+
+
+
+
 hittable_list random_scene(){
     hittable_list world;
     auto ground_material = make_shared<lambertian>(Vector3f(0.5,0.5,0.5));
@@ -94,8 +106,31 @@ int main() {
 
     //world
     // auto R = cos(pi/4);
+
+    Vector3f lookfrom(5.6,5,3);
+    Vector3f lookat(0,0,0);
+    Vector3f vup(0,1,0);
+    auto vfov = 20;
+    auto dist_to_focus = 10;
+    auto aperture = 0.1;
     auto world = random_scene();
 
+    switch (3)
+    {
+    case 2:
+        /* code */
+        break;
+    
+    case 3:
+        world = two_perlin_spheres();
+        lookfrom = Vector3f(13,2,3);
+        lookat = Vector3f(0,0,0);
+        vfov = 20.0;
+        break;
+    default:
+        break;
+    }
+    
     // auto material_ground = make_shared<lambertian>(Vector3f(0.8, 0.8, 0.0));
     // auto material_center = make_shared<lambertian>(Vector3f(0.1, 0.2, 0.5));
     // auto material_left   = make_shared<dielectric>(1.5);
@@ -107,13 +142,9 @@ int main() {
     // world.add(make_shared<Sphere>(Vector3f(-1.0,    0.0, -1.0), -0.45, material_left));
     // world.add(make_shared<Sphere>(Vector3f( 1.0,    0.0, -1.0),   0.5, material_right));
 
-    Vector3f lookfrom(5.6,5,3);
-    Vector3f lookat(0,0,0);
-    Vector3f vup(0,1,0);
-    auto dist_to_focus = 10;
-    auto aperture = 0.1;
 
-    camera cam(lookfrom, lookat, vup, 50, aspect_ratio, aperture, dist_to_focus,0.0,1.0);
+
+    camera cam(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus,0.0,1.0);
     // Render
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";

@@ -2,6 +2,7 @@
 
 
 #include "rtweekend.hpp"
+#include "perlin.hpp"
 
 class texture{
     public:
@@ -49,4 +50,16 @@ class checker_texture : public texture {
         shared_ptr<texture> odd;
         shared_ptr<texture> even;
 
+};
+
+
+class noise_texture : public texture{
+    public:
+        noise_texture() {}
+        virtual Vector3f value(double u,double v,const Vector3f& p) const override{
+            return Vector3f(1,1,1)*noise.noise(p);
+        }
+    
+    public:
+        perlin noise;
 };
