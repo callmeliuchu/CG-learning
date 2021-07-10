@@ -12,6 +12,7 @@ from camera import Camera
 from material import Lambertian,Metal,Dielectric
 import sys
 from moving_sphere import MovingSphere
+from texture import CheckTexture
 
 
 def clamp(v,bg,ed):
@@ -55,10 +56,13 @@ def ray_color(ray,world,depth):
 
 def random_scene():
     world = HitList()
-    ground_material = Lambertian(Color(0.5,0.5,0.5))
+
+
+    check_texture = CheckTexture(Color(0.2,0.3,0.1),Color(0.9,0.9,0.9))
+    ground_material = Lambertian(check_texture)
     world.add(Sphere(Point(0,-1000,0),1000,ground_material))
-    for i in range(-4,4):
-        for j in range(-4,4):
+    for i in range(1,1):
+        for j in range(-2,4):
             choose = random.uniform(0,1)
             center = Point(i+0.9*random.uniform(0,1),0.2,j+0.9*random.uniform(0,1))
             if (center - Point(4,0.2,0.2)).length() > 0.9:
@@ -76,14 +80,14 @@ def random_scene():
                 else:
                     material = Dielectric(1.5)
                     world.add(Sphere(center,0.2,material))
-    material1 = Dielectric(1.5)
-    world.add(Sphere(Point(0,1,0),1.0,material1))
-
-    material2 = Lambertian(Color(0.4,0.2,0.1))
-    world.add(Sphere(Point(-4,1,0),1.0,material2))
-
-    material3 = Metal(Color(0.7,0.6,0.5),0.0)
-    world.add(Sphere(Point(4,1,0),1.0,material3))
+    # material1 = Dielectric(1.5)
+    # world.add(Sphere(Point(0,1,0),1.0,material1))
+    #
+    # material2 = Lambertian(Color(0.4,0.2,0.1))
+    # world.add(Sphere(Point(-4,1,0),1.0,material2))
+    #
+    # material3 = Metal(Color(0.7,0.6,0.5),0.0)
+    # world.add(Sphere(Point(4,1,0),1.0,material3))
     return world
 
 
@@ -96,12 +100,12 @@ if __name__ == '__main__':
 
 
     #camera
-    look_from = Point(13,2,3)
+    look_from = Point(13,5,3)
     look_at = Point(0,0,0)
     vup = Vector3f(0,1,0)
     dist_to_focus = 10.0
     aperture = 0.1
-    cam = Camera(look_from,look_at,vup,aspect_ratio,20,aperture,dist_to_focus)
+    cam = Camera(look_from,look_at,vup,aspect_ratio,70,aperture,dist_to_focus)
 
 
     #world

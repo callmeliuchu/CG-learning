@@ -3,7 +3,7 @@ import math
 from utils import random_unit_vector,reflect,refract
 from vector import Vector3f as Color
 from vector import dot_product
-
+from texture import CheckTexture
 
 class Material:
 
@@ -13,14 +13,24 @@ class Material:
 
 class Lambertian(Material):
 
-    def __init__(self,color):
-        self.albedo = color
+    def __init__(self,color_obj):
+        self.color_obj = color_obj
 
     def scatter(self,hit_record):
         normal = hit_record.normal
         out_out_light_dir = normal + random_unit_vector()
         hit_record.set_out_light_dir(out_out_light_dir)
-        hit_record.set_attenuation(self.albedo)
+        u, v = hit_record.uv
+        if isinstance(self.color_obj,CheckTexture):
+            albedo = self.color_obj.get_color(u,v,hit_record.p)
+        elif isinstance(self.color_obj,Color):
+            albedo = self.color_obj
+        else:
+            raise NotImplemented
+        hit_record.set_attenuation(albedo)
+
+
+
 
 
 class Metal(Material):

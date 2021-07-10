@@ -12,6 +12,9 @@ class HitRecord:
         self.out_light_dir = None
         self.attenuation = None
         self.tm = tm
+        self.uv = (0.1,0.2)
+        self.p = None
+
 
     def set_normal(self,normal):
         self.front = dot_product(normal,self.ray_direct) < 0

@@ -4,13 +4,18 @@ import math
 from hitrecord import HitRecord
 
 
-
 class Sphere(Hittable):
 
     def __init__(self,center,radius,material):
         self.center = center
         self.radius = radius
         self.material = material
+
+    @staticmethod
+    def get_uv_from(point):
+        fi = math.atan2(-point.z,point.x) + math.pi
+        theta = math.acos(-point.y)
+        return fi / (2 * math.pi), theta / math.pi
 
     def hit(self,ray,start,end):
         oc = ray.orig - self.center
@@ -29,4 +34,5 @@ class Sphere(Hittable):
         normal = (hit_point - self.center)*(1/self.radius)
         hit_record = HitRecord(hit_point,ray.direction,t,self.material)
         hit_record.set_normal(normal)
+        hit_record.p = normal
         return hit_record
