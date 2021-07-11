@@ -2,7 +2,7 @@ import math
 
 
 def sin(x):
-    return math.sin(18000*x/math.pi)
+    return math.sin(180*x)
 class CheckTexture:
 
     def __init__(self,color1,color2):
