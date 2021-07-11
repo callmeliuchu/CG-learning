@@ -22,6 +22,15 @@ public:
         , y(yy)
         , z(zz)
     {}
+    float get(int i){
+        if(i == 0){
+            return x;
+        }else if(i == 1){
+            return y;
+        }else{
+            return z;
+        }
+    }
     bool near_zero() const{
         const auto s = 1e-8;
         return (fabs(x<s)) && (fabs(y<s)) && (fabs(z<s));
