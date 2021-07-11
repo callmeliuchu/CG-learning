@@ -13,6 +13,10 @@ class material{
         virtual bool scatter(
             const ray& r_in, const hit_record& rec, Vector3f& attenuation, ray& sacttered
         )const=0;
+
+        virtual Vector3f emitted(double u,double v,const Vector3f& p)const{
+            return Vector3f(0,0,0);
+        }
 };
 
 
@@ -88,4 +92,26 @@ class dielectric : public material {
             r0 = r0*r0;
             return r0 + (1-r0)*pow((1-cosine),5);
         }
+};
+
+
+
+class diffuse_light : public material {
+    public:
+        diffuse_light(shared_ptr<texture> a) : emit(a){}
+        diffuse_light(Vector3f c) : emit(make_shared<solid_color>(c)){}
+
+        virtual bool scatter(
+            const ray& r_in,const hit_record& rec,Vector3f& attenuation,ray& scatter
+        )const override{
+            return false;
+        }
+
+        virtual Vector3f emitted(double u,double v,const Vector3f& p)const override{
+            return emit->value(u,v,p);
+        }
+
+
+    public:
+        shared_ptr<texture> emit;
 };
