@@ -34,5 +34,7 @@ class Sphere(Hittable):
         normal = (hit_point - self.center)*(1/self.radius)
         hit_record = HitRecord(hit_point,ray.direction,t,self.material)
         hit_record.set_normal(normal)
+        u,v = self.get_uv_from(normal)
         hit_record.p = normal
+        hit_record.set_emitted(self.material.emitted(u,v,normal))
         return hit_record

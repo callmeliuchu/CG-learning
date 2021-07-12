@@ -3,7 +3,7 @@ import math
 from utils import random_unit_vector,reflect,refract
 from vector import Vector3f as Color
 from vector import dot_product
-from texture import CheckTexture
+
 
 
 class Material:
@@ -65,11 +65,14 @@ class Dielectric(Material):
         hit_record.set_attenuation(color)
 
 
-class Light(Material):
+class DiffuseLight(Material):
+
+    def __init__(self,color_texture):
+        self.color_texture = color_texture
 
     def scatter(self,hit_record):
         pass
 
     def emitted(self,u,v,p):
-        return
+        return self.color_texture.value(u,v,p)
 

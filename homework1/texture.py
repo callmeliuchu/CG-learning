@@ -2,7 +2,7 @@ import math
 
 
 def sin(x):
-    return math.sin(18000*x)
+    return math.sin(1800*x)
 
 
 class Texture:

@@ -17,6 +17,12 @@ class MovingSphere(Hittable):
     def cal_center(self,tm):
         return self.center0 + (self.center1 - self.center0)*((tm-self.tm1)/(self.tm2-self.tm1))
 
+    @staticmethod
+    def get_uv_from(point):
+        fi = math.atan2(-point.z,point.x) + math.pi
+        theta = math.acos(-point.y)
+        return fi / (2 * math.pi), theta / math.pi
+
     def hit(self,ray,start,end):
         cen = self.cal_center(ray.tm)
         oc = ray.orig - cen
@@ -36,4 +42,6 @@ class MovingSphere(Hittable):
         hit_record = HitRecord(hit_point,ray.direction,t,self.material)
         hit_record.set_normal(normal)
         hit_record.tm = ray.tm
+        u,v = self.get_uv_from(normal)
+        hit_record.set_emitted(self.material.emitted(u,v,normal))
         return hit_record

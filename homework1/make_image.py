@@ -9,10 +9,10 @@ from ray import Ray
 from hit_list import HitList
 from sphere import Sphere
 from camera import Camera
-from material import Lambertian,Metal,Dielectric
+from material import Lambertian,Metal,Dielectric,DiffuseLight
 import sys
 from moving_sphere import MovingSphere
-from texture import CheckTexture
+from texture import CheckTexture,SolidColor
 
 
 def clamp(v,bg,ed):
@@ -38,18 +38,22 @@ def write_color(color,sample_per_pix):
     print(int(255*clamp(r,0,0.9999)),int(255*clamp(g,0,0.99)),int(255*clamp(b,0,0.999)))
 
 
-def ray_color(ray,world,depth):
+def ray_color(ray,background,world,depth):
     if depth <= 0:
         return Color(0,0,0)
     hit_record = world.hit(ray,0.001,100000)
-    if hit_record.is_hit:
-        hit_record.material.scatter(hit_record)
-        if hit_record.can_scatter():
-            attenuation = hit_record.attenuation
-            return attenuation*ray_color(Ray(hit_record.hit_point,hit_record.out_light_dir,ray.tm),world,depth-1)
-    v = ray.direction.normalize()
-    t = 0.5*(v.y + 1.0)
-    return (1.0 - t) * Vector3f(1.0, 1.0, 1.0) + t * Vector3f(0.5, 0.7, 1.0)
+    if not hit_record.is_hit:
+        return background
+
+    hit_record.material.scatter(hit_record)
+    emitted = hit_record.emitted
+    if not hit_record.can_scatter():
+        return emitted
+    attenuation = hit_record.attenuation
+    return emitted + attenuation*ray_color(Ray(hit_record.hit_point,hit_record.out_light_dir,ray.tm),background,world,depth-1)
+    # v = ray.direction.normalize()
+    # t = 0.5*(v.y + 1.0)
+    # return (1.0 - t) * Vector3f(1.0, 1.0, 1.0) + t * Vector3f(0.5, 0.7, 1.0)
 
 
 
@@ -91,16 +95,28 @@ def random_scene():
     return world
 
 
+def light_scene():
+    world = HitList()
+    check_texture = CheckTexture(Color(0.2,0.3,0.1),Color(0.9,0.9,0.9))
+    ground_material = Lambertian(check_texture)
+    solid_color = SolidColor(Color(5,5,5))
+    light_material = DiffuseLight(solid_color)
+    world.add(Sphere(Point(0,2,0),1,light_material))
+    world.add(Sphere(Point(0,-1000,0),1000,ground_material))
+    return world
+
+
 
 if __name__ == '__main__':
     #image
     aspect_ratio = 16.0 / 9.0
     width = 400
     height = int(width / aspect_ratio)
+    background = Color(0,0,0)
 
 
     #camera
-    look_from = Point(13,5,3)
+    look_from = Point(8,8,8)
     look_at = Point(0,0,0)
     vup = Vector3f(0,1,0)
     dist_to_focus = 10.0
@@ -109,12 +125,12 @@ if __name__ == '__main__':
 
 
     #world
-    world = random_scene()
+    world = light_scene()
 
 
     #render
-    depth = 20
-    sample_per_pix = 10
+    depth = 50
+    sample_per_pix = 100
 
     print("P3")
     print(width,height)
@@ -128,5 +144,5 @@ if __name__ == '__main__':
                 u = (j+random.random())/(width-1)
                 v = (i+random.random())/(height-1)
                 a_ray = cam.get_ray(u,v,random.uniform(0,1))
-                color += ray_color(a_ray,world,depth)
+                color += ray_color(a_ray,background,world,depth)
             write_color(color,sample_per_pix)

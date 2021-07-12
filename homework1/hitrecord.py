@@ -16,6 +16,9 @@ class HitRecord:
         self.p = None
         self.emitted = None
 
+    def can_emitte(self):
+        return self.emitted is not None
+
 
     def set_normal(self,normal):
         self.front = dot_product(normal,self.ray_direct) < 0
@@ -23,6 +26,9 @@ class HitRecord:
 
     def set_attenuation(self,attenuation):
         self.attenuation = attenuation
+
+    def set_emitted(self,emitted):
+        self.emitted = emitted
 
     def can_scatter(self):
         if self.normal is not None and self.out_light_dir is not None:
