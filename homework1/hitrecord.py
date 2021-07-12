@@ -14,6 +14,7 @@ class HitRecord:
         self.tm = tm
         self.uv = (0.1,0.2)
         self.p = None
+        self.emitted = None
 
 
     def set_normal(self,normal):
@@ -24,7 +25,9 @@ class HitRecord:
         self.attenuation = attenuation
 
     def can_scatter(self):
-        return self.normal * self.out_light_dir
+        if self.normal is not None and self.out_light_dir is not None:
+            return dot_product(self.normal,self.out_light_dir) > 0
+        return False
 
     @property
     def is_hit(self):

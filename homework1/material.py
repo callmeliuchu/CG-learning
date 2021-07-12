@@ -5,32 +5,28 @@ from vector import Vector3f as Color
 from vector import dot_product
 from texture import CheckTexture
 
+
 class Material:
 
     def scatter(self,hit_record):
         pass
 
+    def emitted(self,u,v,p):
+        return Color(0,0,0)
+
 
 class Lambertian(Material):
 
-    def __init__(self,color_obj):
-        self.color_obj = color_obj
+    def __init__(self,color_texture):
+        self.color_texture = color_texture
 
     def scatter(self,hit_record):
         normal = hit_record.normal
         out_out_light_dir = normal + random_unit_vector()
         hit_record.set_out_light_dir(out_out_light_dir)
         u, v = hit_record.uv
-        if isinstance(self.color_obj,CheckTexture):
-            albedo = self.color_obj.get_color(u,v,hit_record.p)
-        elif isinstance(self.color_obj,Color):
-            albedo = self.color_obj
-        else:
-            raise NotImplemented
+        albedo = self.color_texture.value(u,v,hit_record.p)
         hit_record.set_attenuation(albedo)
-
-
-
 
 
 class Metal(Material):
@@ -67,3 +63,13 @@ class Dielectric(Material):
             out_light_dir = refract(ray_in, normal,theta)
             hit_record.set_out_light_dir(out_light_dir)
         hit_record.set_attenuation(color)
+
+
+class Light(Material):
+
+    def scatter(self,hit_record):
+        pass
+
+    def emitted(self,u,v,p):
+        return
+
