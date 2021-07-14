@@ -11,8 +11,8 @@ class Camera:
         self.look_from = look_from
         self.look_at = look_at
         self.vup = vup
-        ww = look_from - look_at
-        self.ww = ww.normalize()
+        self.ww = look_from - look_at
+        self.ww = self.ww.normalize()
         self.uu = cross(vup,self.ww)
         self.vv = cross(self.ww,self.uu)
         self.orig = look_from

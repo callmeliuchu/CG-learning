@@ -43,7 +43,8 @@ def write_color(color,sample_per_pix):
 def ray_color(ray,background,world,depth):
     if depth <= 0:
         return Color(0,0,0)
-    hit_record = world.hit(ray,0.001,100000)
+    hit_record = HitRecord()
+    world.hit(ray, 0.001, 100000,hit_record)
     if not hit_record.is_hit:
         return background
 
@@ -157,7 +158,7 @@ if __name__ == '__main__':
         look_at = Point(0,0,0)
         vup = Vector3f(0,1,0)
         aspect_ratio = 1
-        width = 800
+        width = 300
         height = int(width / aspect_ratio)
         dist_to_focus = 10.0
         aperture = 0.1
@@ -180,8 +181,8 @@ if __name__ == '__main__':
 
 
     #render
-    depth = 20
-    sample_per_pix = 100
+    depth = 10
+    sample_per_pix = 10
 
     print("P3")
     print(width,height)

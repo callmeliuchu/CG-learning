@@ -2,7 +2,6 @@ from hittable import Hittable
 from aabb import surrounding_box
 import functools
 import random
-from hitrecord import HitRecord
 
 
 def compare_x(a,b):
@@ -55,11 +54,12 @@ class BVH(Hittable):
     def bounding_box(self,tim0,time1):
         return self.box
 
-    def hit(self,ray,start,end):
-        if not self.box.hit(ray,start,end):
-            return HitRecord()
-        hit_left = self.left.hit(ray,start,end)
-        hit_right = self.right.hit(ray,start,hit_left.tm if hit_left.is_hit else end)
+    def hit(self,ray,start,end,hit_record):
+        if not self.box.hit(ray,start,end,hit_record):
+            return False
+        hit_left = self.left.hit(ray,start,end,hit_record)
+        hit_right = self.right.hit(ray,start,hit_left.dist if hit_left else end,hit_record)
+        return hit_left or hit_right
 
 
 

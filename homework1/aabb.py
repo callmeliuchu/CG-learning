@@ -7,7 +7,7 @@ class AABB:
         self.point_min = point_min
         self.point_max = point_max
 
-    def hit(self,ray,start,end):
+    def hit(self,ray,start,end,hit_record):
         direction = ray.direction
         orig = ray.orig
         for a in range(3):

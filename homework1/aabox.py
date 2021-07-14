@@ -19,5 +19,5 @@ class Box(Hittable):
         self.box.add(self.yz1)
         self.box.add(self.yz2)
 
-    def hit(self,ray,start,end):
-        return self.box.hit(ray,start,end)
+    def hit(self,ray,start,end,hit_record):
+        return self.box.hit(ray,start,end,hit_record)

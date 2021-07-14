@@ -10,14 +10,13 @@ class HitList(Hittable):
     def add(self,obj):
         self.obj_list.append(obj)
 
-    def hit(self,ray,start,end):
+    def hit(self,ray,start,end,hit_record):
         max_end = end
-        hit_res = HitRecord()
+        hit_res = False
         for obj in self.obj_list:
-            hit_rec = obj.hit(ray,start,max_end)
-            if hit_rec.is_hit:
-                max_end = hit_rec.dist
-                hit_res = hit_rec
+            if obj.hit(ray,start,max_end,hit_record):
+                max_end = hit_record.dist
+                hit_res = True
         return hit_res
 
     def bounding_box(self,time0,time1):

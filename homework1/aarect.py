@@ -13,15 +13,15 @@ class XYRect(Hittable):
         self.k = k
         self.material = m
 
-    def hit(self,ray,start,end):
+    def hit(self,ray,start,end,hit_record):
         t = (self.k-ray.orig.z)/(ray.direction.z)
-        hit_record = HitRecord()
+
         if t < start or t > end:
-            return hit_record
+            return False
         p = ray.orig + t*ray.direction
         if p.x < self.x0 or p.x > self.x1 or p.y < self.y0 or p.y > self.y1:
-            return hit_record
-        hit_record = HitRecord(p, ray.direction, t, self.material)
+            return False
+        hit_record.set(p, ray.direction, t, self.material)
         normal = Vector3f(0,0,1)
         hit_record.set_normal(normal)
         hit_record.hit_point = p
@@ -30,7 +30,7 @@ class XYRect(Hittable):
         hit_record.uv = (u,v)
         hit_record.material = self.material
         hit_record.set_emitted(self.material.emitted(u,v,normal))
-        return hit_record
+        return True
 
 
 class XZRect(Hittable):
@@ -43,15 +43,14 @@ class XZRect(Hittable):
         self.k = k
         self.material = m
 
-    def hit(self,ray,start,end):
+    def hit(self,ray,start,end,hit_record):
         t = (self.k-ray.orig.y)/(ray.direction.y)
-        hit_record = HitRecord()
         if t < start or t > end:
-            return hit_record
+            return False
         p = ray.orig + t*ray.direction
         if p.x < self.x0 or p.x > self.x1 or p.z < self.z0 or p.z > self.z1:
-            return hit_record
-        hit_record = HitRecord(p, ray.direction, t, self.material)
+            return False
+        hit_record.set(p, ray.direction, t, self.material)
         normal = Vector3f(0,1,0)
         hit_record.set_normal(normal)
         hit_record.hit_point = p
@@ -60,7 +59,7 @@ class XZRect(Hittable):
         hit_record.uv = (u,v)
         hit_record.material = self.material
         hit_record.set_emitted(self.material.emitted(u,v,normal))
-        return hit_record
+        return True
 
 
 class YZRect(Hittable):
@@ -73,15 +72,14 @@ class YZRect(Hittable):
         self.k = k
         self.material = m
 
-    def hit(self,ray,start,end):
+    def hit(self,ray,start,end,hit_record):
         t = (self.k-ray.orig.x)/(ray.direction.x)
-        hit_record = HitRecord()
         if t < start or t > end:
-            return hit_record
+            return False
         p = ray.orig + t*ray.direction
         if p.y < self.y0 or p.y > self.y1 or p.z < self.z0 or p.z > self.z1:
-            return hit_record
-        hit_record = HitRecord(p, ray.direction, t, self.material)
+            return False
+        hit_record.set(p, ray.direction, t, self.material)
         normal = Vector3f(1,0,0)
         hit_record.set_normal(normal)
         hit_record.hit_point = p
@@ -90,4 +88,4 @@ class YZRect(Hittable):
         hit_record.uv = (u,v)
         hit_record.material = self.material
         hit_record.set_emitted(self.material.emitted(u,v,normal))
-        return hit_record
+        return True

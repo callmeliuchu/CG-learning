@@ -2,7 +2,37 @@ from vector import dot_product
 
 
 class HitRecord:
-    def __init__(self,hit_point=None,ray_direct=None,dist=None,material=None,tm=None):
+    def __init__(self):
+        self.hit_point = None
+        self.ray_direct = None
+        self.dist = None
+        self.material = None
+        self.front = True
+        self.normal = None
+        self.out_light_dir = None
+        self.attenuation = None
+        self.tm = None
+        self.uv = None
+        self.p = None
+        self.emitted = None
+
+    def copy_from(self,that):
+        if not that:
+            return
+        self.hit_point = that.hit_point
+        self.ray_direct = that.ray_direct
+        self.dist = that.dist
+        self.material = that.material
+        self.front = that.front
+        self.normal = that.normal
+        self.out_light_dir = that.out_light_dir
+        self.attenuation = that.attenuation
+        self.tm = that.tm
+        self.uv = that.uv
+        self.p = that.p
+        self.emitted = that.emitted
+
+    def set(self,hit_point=None,ray_direct=None,dist=None,material=None,tm=None):
         self.hit_point = hit_point
         self.ray_direct = ray_direct
         self.dist = dist
@@ -18,7 +48,6 @@ class HitRecord:
 
     def can_emitte(self):
         return self.emitted is not None
-
 
     def set_normal(self,normal):
         self.front = dot_product(normal,self.ray_direct) < 0
