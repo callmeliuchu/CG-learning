@@ -13,6 +13,8 @@ from material import Lambertian,Metal,Dielectric,DiffuseLight
 import sys
 from moving_sphere import MovingSphere
 from texture import CheckTexture,SolidColor
+from aabox import Box
+from aarect import *
 
 
 def clamp(v,bg,ed):
@@ -101,9 +103,43 @@ def light_scene():
     ground_material = Lambertian(check_texture)
     solid_color = SolidColor(Color(5,5,5))
     light_material = DiffuseLight(solid_color)
-    world.add(Sphere(Point(0,2,0),1,light_material))
+    # world.add(XYRect(0,1,1,2,0,light_material))
+    world.add(Sphere(Point(0,3,0),3,light_material))
+    world.add(Sphere(Point(7, 3, 0), 1, light_material))
+    world.add(Sphere(Point(7, 1, 0), 1, light_material))
+    albedo = Color(random.uniform(0.5, 1), random.uniform(0.5, 1), random.uniform(0.5, 1))
+    fuzz = random.uniform(0, 0.5)
+    material = Metal(albedo, fuzz)
+    box = Box(Point(4,0,-1),Point(5,3,1),material)
+    world.add(box)
     world.add(Sphere(Point(0,-1000,0),1000,ground_material))
     return world
+
+
+def cornel():
+    world = HitList()
+    white = Lambertian(SolidColor(Color(0.73, 0.73, 0.73)))
+    green = Lambertian(SolidColor(Color(00.12,0.45,0.15)))
+    red = Lambertian(SolidColor(Color(0.7, 0.1, 0.1)))
+    light = DiffuseLight(SolidColor(Color(25,25, 25)))
+    xy = XYRect(0, 555, 0, 555, 555, white)
+    yz1 = YZRect(0,555,0,555,555,green)
+    yz2 = YZRect(0,555,0,555,0,red)
+    xz1 = XZRect(0,555,0,555,555,white)
+    xz2 = XZRect(0, 555, 0, 555, 0, white)
+    world.add(xy)
+    world.add(yz1)
+    world.add(yz2)
+    world.add(xz1)
+    world.add(xz2)
+    world.add(Box(Vector3f(130, 0, 65), Vector3f(295, 165, 230), white))
+    world.add(Box(Vector3f(265, 0, 295), Vector3f(430, 330, 460), white))
+    zx_light = XZRect(213, 343, 227, 332, 554, light)
+    world.add(zx_light)
+    return world
+
+
+
 
 
 
@@ -114,22 +150,37 @@ if __name__ == '__main__':
     height = int(width / aspect_ratio)
     background = Color(0,0,0)
 
+    case = 1
+    if case == 0:
+        #camera
+        look_from = Point(7,7,7)
+        look_at = Point(0,0,0)
+        vup = Vector3f(0,1,0)
+        aspect_ratio = 1
+        width = 800
+        height = int(width / aspect_ratio)
+        dist_to_focus = 10.0
+        aperture = 0.1
+        cam = Camera(look_from,look_at,vup,aspect_ratio,70,aperture,dist_to_focus)
+        #world
+        world = light_scene()
+    elif case == 1:
+        look_from = Point(278, 278, -800)
+        look_at = Point(278, 278, 0)
+        vup = Vector3f(0, 1, 0)
+        aspect_ratio = 1
+        width = 400
+        height = int(width / aspect_ratio)
+        dist_to_focus = 10.0
+        aperture = 0.1
+        cam = Camera(look_from, look_at, vup, aspect_ratio, 40, aperture, dist_to_focus)
+        # world·
+        world = cornel()
 
-    #camera
-    look_from = Point(8,8,8)
-    look_at = Point(0,0,0)
-    vup = Vector3f(0,1,0)
-    dist_to_focus = 10.0
-    aperture = 0.1
-    cam = Camera(look_from,look_at,vup,aspect_ratio,70,aperture,dist_to_focus)
-
-
-    #world
-    world = light_scene()
 
 
     #render
-    depth = 50
+    depth = 20
     sample_per_pix = 100
 
     print("P3")
