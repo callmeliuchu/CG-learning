@@ -1,7 +1,8 @@
 from hittable import Hittable
-from vector import dot_product
+from vector import dot_product,Vector3f
 from hitrecord import HitRecord
 import math
+from aabb import AABB,surrounding_box
 
 
 class MovingSphere(Hittable):
@@ -45,3 +46,11 @@ class MovingSphere(Hittable):
         u,v = self.get_uv_from(normal)
         hit_record.set_emitted(self.material.emitted(u,v,normal))
         return hit_record
+
+    def bounding_box(self,tim0,time1):
+        aabb1 = AABB(self.center0-Vector3f(self.radius,self.radius,self.radius),
+                     self.center0+Vector3f(self.radius,self.radius,self.radius))
+        aabb2 = AABB(self.center1-Vector3f(self.radius,self.radius,self.radius),
+                     self.center1+Vector3f(self.radius,self.radius,self.radius))
+        return surrounding_box(aabb1,aabb2)
+

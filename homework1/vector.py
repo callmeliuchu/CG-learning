@@ -8,6 +8,10 @@ class Vector3f:
         self.x = x
         self.y = y
         self.z = z
+        self.arr = [x,y,z]
+
+    def __getitem__(self, item):
+        return self.arr[item]
 
     def __add__(self, other):
         return Vector3f(self.x+other.x,self.y+other.y,self.z+other.z)

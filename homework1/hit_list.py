@@ -1,6 +1,6 @@
 from hittable import Hittable
 from hitrecord import HitRecord
-
+from aabb import *
 
 class HitList(Hittable):
 
@@ -19,3 +19,12 @@ class HitList(Hittable):
                 max_end = hit_rec.dist
                 hit_res = hit_rec
         return hit_res
+
+    def bounding_box(self,time0,time1):
+        temp = None
+        for obj in self.obj_list:
+            if not temp:
+                temp = obj.bounding_box(time0,time1)
+            else:
+                temp = surrounding_box(temp,obj.bounding_box(time0,time1))
+        return temp

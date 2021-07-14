@@ -1,8 +1,8 @@
 from hittable import Hittable
-from vector import dot_product
+from vector import dot_product,Vector3f
 import math
 from hitrecord import HitRecord
-
+from aabb import AABB
 
 class Sphere(Hittable):
 
@@ -38,3 +38,8 @@ class Sphere(Hittable):
         hit_record.p = normal
         hit_record.set_emitted(self.material.emitted(u,v,normal))
         return hit_record
+
+    def bounding_box(self,time0,time1):
+        aabb = AABB(self.center-Vector3f(self.radius,self.radius,self.radius),
+                    self.center+Vector3f(self.radius,self.radius,self.radius))
+        return aabb
