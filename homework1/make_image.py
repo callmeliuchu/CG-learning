@@ -3,7 +3,6 @@ import random
 from utils import *
 from vector import Vector3f as Color
 from vector import Vector3f as Point
-from vector import Vector3f
 import math
 from ray import Ray
 from hit_list import HitList
@@ -15,6 +14,7 @@ from moving_sphere import MovingSphere
 from texture import CheckTexture,SolidColor
 from aabox import Box
 from aarect import *
+from bvh import BVH
 
 
 def clamp(v,bg,ed):
@@ -33,7 +33,6 @@ def write_color(color,sample_per_pix):
     r = r*scale
     g = g*scale
     b = b*scale
-
     r = math.sqrt(r)
     g = math.sqrt(g)
     b = math.sqrt(b)
@@ -47,16 +46,12 @@ def ray_color(ray,background,world,depth):
     world.hit(ray, 0.001, 100000,hit_record)
     if not hit_record.is_hit:
         return background
-
     hit_record.material.scatter(hit_record)
     emitted = hit_record.emitted
     if not hit_record.can_scatter():
         return emitted
     attenuation = hit_record.attenuation
     return emitted + attenuation*ray_color(Ray(hit_record.hit_point,hit_record.out_light_dir,ray.tm),background,world,depth-1)
-    # v = ray.direction.normalize()
-    # t = 0.5*(v.y + 1.0)
-    # return (1.0 - t) * Vector3f(1.0, 1.0, 1.0) + t * Vector3f(0.5, 0.7, 1.0)
 
 
 
@@ -68,8 +63,8 @@ def random_scene():
     check_texture = CheckTexture(Color(0.2,0.3,0.1),Color(0.9,0.9,0.9))
     ground_material = Lambertian(check_texture)
     world.add(Sphere(Point(0,-1000,0),1000,ground_material))
-    for i in range(1,1):
-        for j in range(-2,4):
+    for i in range(-100,100):
+        for j in range(-100,100):
             choose = random.uniform(0,1)
             center = Point(i+0.9*random.uniform(0,1),0.2,j+0.9*random.uniform(0,1))
             if (center - Point(4,0.2,0.2)).length() > 0.9:
@@ -87,14 +82,14 @@ def random_scene():
                 else:
                     material = Dielectric(1.5)
                     world.add(Sphere(center,0.2,material))
-    # material1 = Dielectric(1.5)
-    # world.add(Sphere(Point(0,1,0),1.0,material1))
-    #
-    # material2 = Lambertian(Color(0.4,0.2,0.1))
-    # world.add(Sphere(Point(-4,1,0),1.0,material2))
-    #
-    # material3 = Metal(Color(0.7,0.6,0.5),0.0)
-    # world.add(Sphere(Point(4,1,0),1.0,material3))
+    material1 = Dielectric(1.5)
+    world.add(Sphere(Point(0,1,0),1.0,material1))
+
+    material2 = Lambertian(Color(0.4,0.2,0.1))
+    world.add(Sphere(Point(-4,1,0),1.0,material2))
+
+    material3 = Metal(Color(0.7,0.6,0.5),0.0)
+    world.add(Sphere(Point(4,1,0),1.0,material3))
     return world
 
 
@@ -140,11 +135,7 @@ def cornel():
     return world
 
 
-
-
-
-
-if __name__ == '__main__':
+def main():
     #image
     aspect_ratio = 16.0 / 9.0
     width = 400
@@ -178,8 +169,6 @@ if __name__ == '__main__':
         # world·
         world = cornel()
 
-
-
     #render
     depth = 10
     sample_per_pix = 10
@@ -198,3 +187,28 @@ if __name__ == '__main__':
                 a_ray = cam.get_ray(u,v,random.uniform(0,1))
                 color += ray_color(a_ray,background,world,depth)
             write_color(color,sample_per_pix)
+
+
+def test_bvh():
+    world = random_scene()
+    ray = Ray(Vector3f(-1,10,1),Vector3f(0.5,-0.5,0.5),0.5)
+    bvh = BVH(world.obj_list,0,1)
+    import time
+    bg = time.time()
+    hit_record = HitRecord()
+    if bvh.hit(ray,0,100000,hit_record):
+        pass
+        print(hit_record.hit_point)
+    ed = time.time()
+    print(ed-bg)
+    hit_record = HitRecord()
+    if world.hit(ray,0,100000,hit_record):
+        pass
+        print(hit_record.hit_point)
+    print(time.time()-ed)
+
+
+if __name__ == '__main__':
+    test_bvh()
+
+

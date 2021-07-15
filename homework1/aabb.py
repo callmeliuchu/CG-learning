@@ -10,9 +10,9 @@ class AABB:
     def hit(self,ray,start,end,hit_record):
         direction = ray.direction
         orig = ray.orig
-        for a in range(3):
-            a = (self.point_min[a]-orig[a]) / direction[a],
-            b = (self.point_max[a]-orig[a]) / direction[a]
+        for i in range(3):
+            a = (self.point_min[i]-orig[i]) / direction[i]
+            b = (self.point_max[i]-orig[i]) / direction[i]
             t0 = min(a,b)
             t1 = max(a,b)
             start = max(t0,start)

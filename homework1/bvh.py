@@ -17,7 +17,9 @@ def compare_z(a,b):
 
 
 def compare(a,b,axis):
-    return a.point_min[axis] - b.point_max[axis]
+    a_box = a.bounding_box(0,0)
+    b_box = b.bounding_box(0,0)
+    return a_box.point_min[axis] - b_box.point_max[axis]
 
 
 def get_cmp(axis):
@@ -33,10 +35,10 @@ class BVH(Hittable):
     left = None
     right = None
 
-    def __init__(self,obj_list,bg,ed,time0,time1):
+    def __init__(self,obj_list,time0,time1):
         axis = random.randint(0,2)
-        obj_list.sorted(key=functools.cmp_to_key(get_cmp(axis)))
         n = len(obj_list)
+        obj_list.sort(key=functools.cmp_to_key(get_cmp(axis)))
         if n == 1:
             self.left = obj_list[0]
             self.right = self.left
@@ -45,8 +47,8 @@ class BVH(Hittable):
             self.right = obj_list[1]
         else:
             mid = n // 2
-            self.left = BVH(obj_list,bg,mid,time0,time1)
-            self.right = BVH(obj_list,mid+1,ed,time0,time1)
+            self.left = BVH(obj_list[:mid],time0,time1)
+            self.right = BVH(obj_list[mid:],time0,time1)
         box_left = self.left.bounding_box(time0,time1)
         box_right = self.right.bounding_box(time0,time1)
         self.box = surrounding_box(box_left,box_right)
@@ -58,7 +60,7 @@ class BVH(Hittable):
         if not self.box.hit(ray,start,end,hit_record):
             return False
         hit_left = self.left.hit(ray,start,end,hit_record)
-        hit_right = self.right.hit(ray,start,hit_left.dist if hit_left else end,hit_record)
+        hit_right = self.right.hit(ray,start,hit_record.dist if hit_left else end,hit_record)
         return hit_left or hit_right
 
 
