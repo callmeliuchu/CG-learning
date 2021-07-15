@@ -1,6 +1,5 @@
 from hittable import Hittable
 from vector import dot_product,Vector3f
-from hitrecord import HitRecord
 import math
 from aabb import AABB,surrounding_box
 

@@ -19,7 +19,10 @@ def compare_z(a,b):
 def compare(a,b,axis):
     a_box = a.bounding_box(0,0)
     b_box = b.bounding_box(0,0)
-    return a_box.point_min[axis] - b_box.point_max[axis]
+    try:
+        return a_box.point_min[axis] - b_box.point_max[axis]
+    except Exception as e:
+        print(e)
 
 
 def get_cmp(axis):

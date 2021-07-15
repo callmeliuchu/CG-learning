@@ -1,7 +1,6 @@
 from hittable import Hittable
-from hitrecord import HitRecord
 from vector import Vector3f
-
+from aabb import AABB
 
 class XYRect(Hittable):
 
@@ -32,6 +31,9 @@ class XYRect(Hittable):
         hit_record.set_emitted(self.material.emitted(u,v,normal))
         return True
 
+    def bounding_box(self,tim0,time1):
+        return AABB(Vector3f(self.x0,self.y0,self.k-0.0001),Vector3f(self.x1,self.y1,self.k+0.0001))
+
 
 class XZRect(Hittable):
 
@@ -61,6 +63,8 @@ class XZRect(Hittable):
         hit_record.set_emitted(self.material.emitted(u,v,normal))
         return True
 
+    def bounding_box(self,tim0,time1):
+        return AABB(Vector3f(self.x0,self.k-0.0001,self.z0),Vector3f(self.x1,self.k+0.0001,self.z1))
 
 class YZRect(Hittable):
 
@@ -89,3 +93,6 @@ class YZRect(Hittable):
         hit_record.material = self.material
         hit_record.set_emitted(self.material.emitted(u,v,normal))
         return True
+
+    def bounding_box(self,tim0,time1):
+        return AABB(Vector3f(self.k-0.0001,self.y0,self.z0),Vector3f(self.k+0.0001,self.y1,self.z1))

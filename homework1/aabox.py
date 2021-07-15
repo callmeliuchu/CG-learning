@@ -1,5 +1,6 @@
 from aarect import *
 from hit_list import HitList
+from aabb import AABB
 
 
 class Box(Hittable):
@@ -18,6 +19,11 @@ class Box(Hittable):
         self.box.add(self.xz2)
         self.box.add(self.yz1)
         self.box.add(self.yz2)
+        self.p_min = p_min
+        self.p_max = p_max
 
     def hit(self,ray,start,end,hit_record):
         return self.box.hit(ray,start,end,hit_record)
+
+    def bounding_box(self,tim0,time1):
+        return AABB(self.p_min,self.p_max)
