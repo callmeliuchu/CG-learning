@@ -19,7 +19,7 @@ int main()
     sph2->ior = 1.5;
     sph2->materialType = REFLECTION_AND_REFRACTION;
 
-    auto sph3 = std::make_unique<Sphere>(Vector3f(1, -1, -5), 2.5);
+    auto sph3 = std::make_unique<Sphere>(Vector3f(1, -1, -5), 0.5);
     sph3->ior = 0.5;
     sph3->materialType = REFLECTION_AND_REFRACTION;
 
