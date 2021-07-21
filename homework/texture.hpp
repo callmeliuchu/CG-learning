@@ -2,6 +2,7 @@
 
 
 #include "rtweekend.hpp"
+#include  <iostream>
 #include "perlin.hpp"
 
 class texture{
@@ -62,4 +63,20 @@ class noise_texture : public texture{
     
     public:
         perlin noise;
+};
+
+
+class image_texture : public texture{
+    public:
+        const static int bytes_per_pixel = 3;
+        image_texture() : data(nullptr),width(0),height(0),bytes_per_scanline(0){}
+        image_texture(const char* filename){
+            auto componets_per_pixel = bytes_per_pixel;
+        }
+    
+
+    private:
+       unsigned char *data;
+       int width,height;
+       int bytes_per_scanline;
 };

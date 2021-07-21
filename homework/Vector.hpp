@@ -21,8 +21,12 @@ public:
         : x(xx)
         , y(yy)
         , z(zz)
-    {}
-    float get(int i){
+    {
+        arr[0]=x;
+        arr[1]=y;
+        arr[2]=z;
+    }
+    double get(int i)const{
         if(i == 0){
             return x;
         }else if(i == 1){
@@ -30,6 +34,12 @@ public:
         }else{
             return z;
         }
+    }
+    double operator[](int i)const{
+        return arr[i];
+    }
+    double& operator[](int i) { 
+        return arr[i]; 
     }
     bool near_zero() const{
         const auto s = 1e-8;
@@ -77,6 +87,7 @@ public:
         return sqrt(x*x+y*y+z*z);
     }
     float x, y, z;
+    double arr[3];
 };
 
 class Vector2f

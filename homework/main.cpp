@@ -10,6 +10,8 @@
 #include "texture.hpp"
 #include <iostream>
 #include "aarec.hpp"
+#include "aabox.hpp"
+#include "bvh.hpp"
 
 
 Vector3f ray_color(const ray& r,const Vector3f& background, const hittable_list& world,int depth){
@@ -118,7 +120,73 @@ hittable_list cornell_box(){
     objects.add(make_shared<xz_rec>(0, 555, 0, 555, 555, white));
     objects.add(make_shared<xy_rec>(0, 555, 0, 555, 555, white));
 
+    shared_ptr<hittable> box1 = make_shared<box>(Vector3f(0,0,0), Vector3f(165,330,165), white);
+    box1 = make_shared<rotate_y>(box1, 15);
+    box1 = make_shared<translate>(box1, Vector3f(265,0,295));
+    objects.add(box1);
+
+    shared_ptr<hittable> box2 = make_shared<box>(Vector3f(0,0,0), Vector3f(165,165,165), white);
+    box2 = make_shared<rotate_y>(box2, -18);
+    box2 = make_shared<translate>(box2, Vector3f(130,0,65));
+    objects.add(box2);
+
     return objects;
+}
+
+hittable_list final_scene(){
+    hittable_list boxes1;
+    auto ground = make_shared<lambertian>(Vector3f(0.48,0.83,0.53));
+    const int boxes_per_side = 20;
+    for(int i=0;i<boxes_per_side;i++){
+        for(int j=0;j<boxes_per_side;j++){
+            auto w = 100.0;
+            auto x0 = -1000.0 + i*w;
+            auto z0 = -1000.0 + j*w;
+            auto y0 = 0.0;
+            auto x1 = x0 + w;
+            auto y1 = random_double(1,101);
+            auto z1 = z0 + w;
+
+            boxes1.add(make_shared<box>(Vector3f(x0,y0,z0),Vector3f(x1,y1,z1),ground));
+        }
+    }
+    hittable_list objects;
+
+    objects.add(make_shared<bvh_node>(boxes1, 0, 1));
+
+    auto light = make_shared<diffuse_light>(Vector3f(7, 7, 7));
+    objects.add(make_shared<xz_rec>(123, 423, 147, 412, 554, light));
+
+    auto center1 = Vector3f(400, 400, 200);
+    auto center2 = center1 + Vector3f(30,0,0);
+    auto moving_sphere_material = make_shared<lambertian>(Vector3f(0.7, 0.3, 0.1));
+    objects.add(make_shared<moving_sphere>(center1, center2, 0, 1, 50, moving_sphere_material));
+
+    objects.add(make_shared<Sphere>(Vector3f(260, 150, 45), 50, make_shared<dielectric>(1.5)));
+    objects.add(make_shared<Sphere>(
+        Vector3f(0, 150, 145), 50, make_shared<metal>(Vector3f(0.8, 0.8, 0.9), 1.0)
+    ));
+
+    auto boundary = make_shared<Sphere>(Vector3f(360,150,145), 70, make_shared<dielectric>(1.5));
+    objects.add(boundary);
+    // objects.add(make_shared<constant_medium>(boundary, 0.2, color(0.2, 0.4, 0.9)));
+    // boundary = make_shared<sphere>(point3(0, 0, 0), 5000, make_shared<dielectric>(1.5));
+    // objects.add(make_shared<constant_medium>(boundary, .0001, color(1,1,1)));
+
+    // auto emat = make_shared<lambertian>(make_shared<image_texture>("earthmap.jpg"));
+    // objects.add(make_shared<sphere>(point3(400,200,400), 100, emat));
+    auto pertext = make_shared<noise_texture>();
+    objects.add(make_shared<Sphere>(Vector3f(220,280,300), 80, make_shared<lambertian>(pertext)));
+
+    hittable_list boxes2;
+    auto white = make_shared<lambertian>(Vector3f(.73, .73, .73));
+    int ns = 1000;
+    for (int j = 0; j < ns; j++) {
+        boxes2.add(make_shared<Sphere>(random_v(0,165), 10, white));
+    }
+    objects.add(make_shared<bvh_node>(boxes2, 0.0, 1.0));
+    return objects;
+
 }
 
 
@@ -130,7 +198,6 @@ int main() {
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 800.0;
     int image_height = int(image_width / aspect_ratio);
-    
     int samples_per_pixel = 50;
     int max_depth = 40;
 
@@ -170,15 +237,27 @@ int main() {
         lookat = Vector3f(0,2,0);
         vfov = 20.0;
         break;
-
-    default:
     case 6:
         world = cornell_box();
         aspect_ratio = 1.0;
         image_width = 600;
+        image_height = int(image_width / aspect_ratio);
         samples_per_pixel = 200;
         background = Vector3f(0,0,0);
         lookfrom = Vector3f(278,278,-800);
+        lookat = Vector3f(278,278,0);
+        vfov = 40.0;
+        break;
+
+    default:
+    case 8:
+        world = final_scene();
+        aspect_ratio = 1.0;
+        image_width = 800;
+        image_height = int(image_width / aspect_ratio);
+        samples_per_pixel = 10;
+        background = Vector3f(0,0,0);
+        lookfrom = Vector3f(478,278,-600);
         lookat = Vector3f(278,278,0);
         vfov = 40.0;
         break;
