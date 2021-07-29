@@ -39,6 +39,13 @@ def generate():
     return params
 
 
+def func_y(x,n,params):
+    arr = [np.power(x,i) for i in range(n)]
+    mat1 = np.mat(arr)
+    ret = mat1.dot(params)
+    return ret.tolist()[0][0]
+
+
 
 def guss_funci(x,xi):
     a = 1
