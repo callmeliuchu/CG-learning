@@ -14,6 +14,10 @@ from texture import CheckTexture, SolidColor
 from aabox import Box
 from aarect import *
 from bvh import BVH
+import taichi as ti
+import numpy as np
+
+ti.init(arch=ti.metal)
 
 
 def clamp(v, bg, ed):
@@ -35,7 +39,8 @@ def write_color(color, sample_per_pix):
     r = math.sqrt(r)
     g = math.sqrt(g)
     b = math.sqrt(b)
-    print(int(255 * clamp(r, 0, 0.9999)), int(255 * clamp(g, 0, 0.99)), int(255 * clamp(b, 0, 0.999)))
+    # print(int(255 * clamp(r, 0, 0.9999)), int(255 * clamp(g, 0, 0.99)), int(255 * clamp(b, 0, 0.999)))
+    return int(255 * clamp(r, 0, 0.9999)), int(255 * clamp(g, 0, 0.99)), int(255 * clamp(b, 0, 0.999))
 
 
 def ray_color(ray, background, world, depth):
@@ -60,15 +65,15 @@ def random_scene():
     check_texture = CheckTexture(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9))
     ground_material = Lambertian(check_texture)
     world.add(Sphere(Point(0, -1000, 0), 1000, ground_material))
-    for i in range(-100, 100):
-        for j in range(-100, 100):
+    for i in range(-2, 2):
+        for j in range(-2, 2):
             choose = random.uniform(0, 1)
             center = Point(i + 0.9 * random.uniform(0, 1), 0.2, j + 0.9 * random.uniform(0, 1))
             if (center - Point(4, 0.2, 0.2)).length() > 0.9:
                 if choose < 0.8:
                     albedo = Color(random.uniform(0.5, 1), random.uniform(0.5, 1), random.uniform(0.5, 1)) * \
                              Color(random.uniform(0.5, 1), random.uniform(0.5, 1), random.uniform(0.5, 1))
-                    material = Lambertian(albedo)
+                    material = Lambertian(SolidColor(albedo))
                     center2 = center + Vector3f(0, random.uniform(0, 0.5), 0)
                     world.add(MovingSphere(center, center2, 0, 1, 0.2, material))
                 elif choose < 0.95:
@@ -82,7 +87,7 @@ def random_scene():
     material1 = Dielectric(1.5)
     world.add(Sphere(Point(0, 1, 0), 1.0, material1))
 
-    material2 = Lambertian(Color(0.4, 0.2, 0.1))
+    material2 = Lambertian(SolidColor(Color(0.4, 0.2, 0.1)))
     world.add(Sphere(Point(-4, 1, 0), 1.0, material2))
 
     material3 = Metal(Color(0.7, 0.6, 0.5), 0.0)
@@ -137,9 +142,9 @@ def main():
     aspect_ratio = 16.0 / 9.0
     width = 400
     height = int(width / aspect_ratio)
-    background = Color(0, 0, 0)
+    background = Color(0.8, 0.7, 0.8)
 
-    case = 1
+    case = 0
     if case == 0:
         # camera
         look_from = Point(7, 7, 7)
@@ -152,7 +157,7 @@ def main():
         aperture = 0.1
         cam = Camera(look_from, look_at, vup, aspect_ratio, 70, aperture, dist_to_focus)
         # world
-        world = light_scene()
+        world = random_scene()
     elif case == 1:
         look_from = Point(278, 278, -800)
         look_at = Point(278, 278, 0)
@@ -175,6 +180,28 @@ def main():
     print("P3")
     print(width, height)
     print(255)
+    return width,height,sample_per_pix,cam,background,world1,depth
+
+
+    #
+    #
+    #
+    #
+    # with open('res.ppm','w') as ff:
+    #     ff.write("P3\n")
+    #     ff.write(f'{width} {height}\n')
+    #     ff.write("255\n")
+    #     for r,g,b in frame_buffer:
+    #         ff.write(f"{r} {g} {b}\n")
+
+width,height,sample_per_pix,cam,background,world1,depth = main()
+
+
+frame_buffer = np.array([0]*(width*height*3))
+
+@ti.kernel
+def run(arr: ti.ext_arr()):
+    idx = 0
     for i in range(height - 1, -1, -1):
         sys.stderr.write('left {}\n'.format(i))
         sys.stderr.flush()
@@ -185,7 +212,25 @@ def main():
                 v = (i + random.random()) / (height - 1)
                 a_ray = cam.get_ray(u, v, random.uniform(0, 1))
                 color += ray_color(a_ray, background, world1, depth)
-            write_color(color, sample_per_pix)
+            r,g,b = write_color(color, sample_per_pix)
+            arr[idx] = r
+            arr[idx+1] = g
+            arr[idx+2] = b
+            idx = idx + 3
+
+
+run(frame_buffer)
+
+
+# print(frame_buffer)
+# with open('res.ppm','w') as ff:
+#     ff.write("P3\n")
+#     ff.write(f'{width} {height}\n')
+#     ff.write("255\n")
+#     for i in range(height):
+#         for j in range(width):
+#             ff.write(f"{r} {g} {b}\n")
+
 
 
 def test_bvh():
@@ -208,4 +253,4 @@ def test_bvh():
 
 
 if __name__ == '__main__':
-    main()
+    pass
