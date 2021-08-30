@@ -7,8 +7,8 @@ import time
 ti.init(arch=ti.cpu)
 
 # 画布
-s_ww = 800
-s_hh = 600
+s_ww = 1000
+s_hh = 1000
 screen = ti.Vector(3, dt=ti.f32, shape=(s_ww,s_hh))
 
 
@@ -18,8 +18,8 @@ height = math.tan(math.radians(fov/2))*2
 width = height*w_h_ratio
 
 
-look_from = ti.Vector([1.0,1.0,1.0],dt=ti.f32)
-look_at = ti.Vector([0.0,0.0,-1.0],dt=ti.f32)
+look_from = ti.Vector([1.0,3.0,2.0],dt=ti.f32)
+look_at = ti.Vector([0.0,0.0,0.0],dt=ti.f32)
 v_up = ti.Vector([0.0,1.0,0.0],dt=ti.f32)
 ww = look_from - look_at
 ww = ww.normalized()
@@ -41,23 +41,30 @@ origin = look_from
 lower_left = origin - vv/2 - uu/2 - ww
 # [0,1,2]球心坐标，[3]球半径 [4]1漫反射2反射3折射 [5,6,7]材质
 sphere1 = ti.Vector([0,0,-1,0.5,3,1.8,0,0],dt=ti.f32)
-sphere2 = ti.Vector([0,-100.5,-1,100,1,0.5,0.5,0.5],dt=ti.f32)
+sphere2 = ti.Vector([0,-1000.5,-1,1000,1,0.5,0.5,0.5],dt=ti.f32)
 sphere3 = ti.Vector([1,0,-1,0.3,2,0.2,0.8,0.8],dt=ti.f32)
 
 print(ww)
 print(uu)
 print(vv)
 print(lower_left)
-# [0. 0. 1.]
-# [2.66666667 0.         0.        ]
-# [0. 2. 0.]
-# [-1.33333333 -1.         -1.        ]
 
 
-spheres = ti.Vector(8,dt=ti.f32,shape=3)
-spheres[0] = sphere1
-spheres[1] = sphere2
-spheres[2] = sphere3
+spheres = ti.Vector(8,dt=ti.f32,shape=1000)
+k = 0
+spheres[k] = sphere2
+for i in range(-11,11):
+    for j in range(-11,11):
+        if (i+j) % 3 == 0:
+            sphere1 = ti.Vector([i, 0, j, 0.5, 3, 1.8, 0, 0], dt=ti.f32)
+        elif (i+j) % 3 == 1:
+            sphere1 = ti.Vector([i, 0, j, 0.3, 2, 0.2, 0.8, 0.8], dt=ti.f32)
+        elif (i + j) % 3 == 2:
+            sphere1 = ti.Vector([i, 0, j, 0.4, 1, ti.abs(0.1*j/11), ti.abs(0.3*j/11+0.2),
+                                 ti.abs(0.7*i/11)], dt=ti.f32)
+        k += 1
+        spheres[k] = sphere1
+
 
 
 @ti.func
@@ -138,7 +145,7 @@ def shoot_objects(ray_origin,ray_direct,objects,t_min,t_max):
     res_p = ti.Vector([0.0,0.0,0.0])
     res_n = ti.Vector([0.0,0.0,0.0])
     idx = 0
-    for i in range(len(objects)):
+    for i in range(k):
         is_hit,t,p,n = shoot(ray_origin,ray_direct,objects[i],t_min,t_max)
         if is_hit and t_max > t:
             t_max = t
@@ -184,6 +191,15 @@ def unit_vector(v):
     return k * v
 
 @ti.func
+def get_earth_material(pos):
+    rst = ti.Vector([0.9,0.9,0.9])
+    if ti.sin(5*pos[0])*ti.sin(5*pos[1])*ti.sin(5*pos[2]) > 0:
+        rst =  ti.Vector([0.2, 0.3, 0.1])
+    else:
+        rst = ti.Vector([0.9, 0.9, 0.9])
+    return rst
+
+@ti.func
 def color(ray_origin,ray_direct,spheres):
     t_min = 0.000001
     t_max = 10000000000.0
@@ -197,6 +213,8 @@ def color(ray_origin,ray_direct,spheres):
             # print(spheres[idx][4])
             r_type = spheres[idx][4]
             material = ti.Vector([spheres[idx][5],spheres[idx][6],spheres[idx][7]])
+            if idx == 0:#地面
+                material = get_earth_material(p)
             # r_type = 1
             if r_type == 1:#漫反射
                 ray_origin = p
@@ -255,16 +273,7 @@ with open('res.ppm','w') as ff:
     for j in range(s_hh-1,-1,-1):
         for i in range(s_ww):
             r,g,b = data[i,j]
-            r = int(255*r)
-            g = int(255*g)
-            b = int(255*b)
+            r = int(255*r) if r is not None else 0
+            g = int(255*g) if g is not None else 0
+            b = int(255*b) if b is not None else 0
             ff.write(f'{r} {g} {b}\n')
-
-
-
-# gui = ti.GUI("screen", (s_ww,s_hh))
-#
-# for _ in range(10000):
-#     draw()
-#     gui.set_image(screen.to_numpy())
-#     gui.show()
