@@ -7,18 +7,35 @@ import time
 ti.init(arch=ti.cpu)
 
 # 画布
-s_ww = 1000
+s_ww = 1200
 s_hh = 1000
 screen = ti.Vector(3, dt=ti.f32, shape=(s_ww,s_hh))
 
 
 fov = 90
 w_h_ratio = s_ww / s_hh
+lens = 0.1
+dist = 10
 height = math.tan(math.radians(fov/2))*2
 width = height*w_h_ratio
 
 
-look_from = ti.Vector([1.0,3.0,2.0],dt=ti.f32)
+
+
+
+@ti.func
+def random_unit_sphere():
+    eta1 = ti.random()
+    eta2 = ti.random()
+    eta3 = ti.random()
+    return ti.Vector([eta1, eta2, eta3]).normalized()
+
+
+
+
+
+
+look_from = ti.Vector([1.0,1.0,3.0],dt=ti.f32)
 look_at = ti.Vector([0.0,0.0,0.0],dt=ti.f32)
 v_up = ti.Vector([0.0,1.0,0.0],dt=ti.f32)
 ww = look_from - look_at
@@ -27,18 +44,12 @@ uu = ti.Vector(np.cross(v_up,ww))
 uu = uu.normalized()
 vv = ti.Vector(np.cross(ww,uu))
 vv = vv.normalized()
-uu = uu*width
-vv = vv*height
+uu = uu
+vv = vv
 origin = look_from
-# origin = ti.Vector([0.0,0.0,0.0])
-# uu = ti.Vector([1.0,0.0,0.0])
-# vv = ti.Vector([0.0,1.0,0.0])
-# ww = ti.Vector([0.0,0.0,1.0])
-# uu = uu*width
-# vv = vv*height
 
 
-lower_left = origin - vv/2 - uu/2 - ww
+lower_left = origin - (vv*height/2 + uu*width/2 + ww)*dist
 # [0,1,2]球心坐标，[3]球半径 [4]1漫反射2反射3折射 [5,6,7]材质
 sphere1 = ti.Vector([0,0,-1,0.5,3,1.8,0,0],dt=ti.f32)
 sphere2 = ti.Vector([0,-1000.5,-1,1000,1,0.5,0.5,0.5],dt=ti.f32)
@@ -104,8 +115,10 @@ def refractor(u,n,inta):
 
 @ti.func
 def get_ray(i,j):
-    pos = lower_left + i * uu + j * vv
-    return origin,pos-origin
+    rd = lens*random_unit_sphere()
+    offset = uu*rd[0] + vv*rd[1]
+    pos = lower_left + i * uu * width * dist + j * vv * height * dist
+    return origin + offset,pos-origin - offset
 
 @ti.func
 def shoot(ray_origin,ray_direct,sphere,t_min,t_max):
@@ -185,6 +198,8 @@ def random_in_unit_sphere():
 
 
 
+
+
 @ti.func
 def unit_vector(v):
     k = 1 / (ti.sqrt(v.dot(v)))
@@ -245,8 +260,6 @@ def color(ray_origin,ray_direct,spheres):
     return ret
 
 
-
-
 @ti.kernel
 def draw():
     for i,j in screen:
@@ -273,7 +286,7 @@ with open('res.ppm','w') as ff:
     for j in range(s_hh-1,-1,-1):
         for i in range(s_ww):
             r,g,b = data[i,j]
-            r = int(255*r) if r is not None else 0
-            g = int(255*g) if g is not None else 0
-            b = int(255*b) if b is not None else 0
+            r = int(255*r) if r  else 0
+            g = int(255*g) if g  else 0
+            b = int(255*b) if b  else 0
             ff.write(f'{r} {g} {b}\n')
