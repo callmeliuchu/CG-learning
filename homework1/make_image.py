@@ -199,7 +199,6 @@ width,height,sample_per_pix,cam,background,world1,depth = main()
 
 frame_buffer = np.array([0]*(width*height*3))
 
-@ti.kernel
 def run(arr: ti.ext_arr()):
     idx = 0
     for i in range(height - 1, -1, -1):
@@ -220,16 +219,6 @@ def run(arr: ti.ext_arr()):
 
 
 run(frame_buffer)
-
-
-# print(frame_buffer)
-# with open('res.ppm','w') as ff:
-#     ff.write("P3\n")
-#     ff.write(f'{width} {height}\n')
-#     ff.write("255\n")
-#     for i in range(height):
-#         for j in range(width):
-#             ff.write(f"{r} {g} {b}\n")
 
 
 
