@@ -89,6 +89,26 @@ def parse(text):
         return data
     return parse_item(text)
 
+def pprint(data,depth=0,has_key=False,ident=4):
+    if isinstance(data,dict):
+        if has_key:
+            print('{')
+        else:
+            print(' '*ident*depth + '{')
+        for k in data:
+            print(' '*ident*(depth+1) + str(k) + ':',end='')
+            pprint(data[k],depth+1,has_key=True)
+        print(' '*ident*depth + '}')
+    elif isinstance(data,list):
+        if has_key:
+            print('[')
+        else:
+            print(' '*ident*depth + '[')
+        for o in data:
+            pprint(o,depth+1)
+        print(' ' * ident*depth + ']')
+    else:
+        print(' '*ident*depth + str(data)+',')
 
 s = '{"a":[1,{}]}'
 print(parse(s))
