@@ -137,7 +137,10 @@ def pretty_print(data,depth=0,has_key=False,ident=4):
         for k in data:
             print(' '*ident*(depth+1) + str(k) + ':',end='')
             pretty_print(data[k],depth+1,has_key=True)
-        print(' '*ident*depth + '}')
+        if depth == 0:
+            print(' '*ident*depth + '}')
+        else:
+            print(' ' * ident * depth + '},')
     elif isinstance(data,list):
         if has_key:
             print('[')
@@ -145,7 +148,10 @@ def pretty_print(data,depth=0,has_key=False,ident=4):
             print(' '*ident*depth + '[')
         for o in data:
             pretty_print(o,depth+1)
-        print(' ' * ident*depth + ']')
+        if depth == 0:
+            print(' ' * ident*depth + ']')
+        else:
+            print(' ' * ident*depth + '],')
     else:
         if has_key:
             print(str(data)+',')
