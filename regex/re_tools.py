@@ -82,9 +82,9 @@ class NFA:
         return False
 
 
-regex = '(hs.*)'
+regex = '.*'
 
-txt = 'hshsbsdjcked'
+txt = 'qhsbsdjcked'
 nfa = NFA(regex)
 if nfa.recognizes(txt):
     print(txt)
