@@ -7,8 +7,8 @@ import time
 ti.init(arch=ti.cpu)
 
 # 画布
-s_ww = 1200
-s_hh = 1000
+s_ww = 12000
+s_hh = 10000
 screen = ti.Vector(3, dt=ti.f32, shape=(s_ww,s_hh))
 
 
